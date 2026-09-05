@@ -119,8 +119,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, error: 'Lead not found' }, { status: 404 });
     }
 
-    const companyName = existingLead.companyName?.trim();
-
     // 1. Delete associated child records concurrently (outreach emails, activities, tasks, AI analyses, custom fields)
     await Promise.all([
       prisma.outreachEmail.deleteMany({ where: { leadId: id, workspaceId: session.workspaceId } }),
@@ -134,47 +132,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     await prisma.lead.delete({
       where: { id },
     });
-
-    // 3. Optional Safe Cleanup: If company has no other leads, deals, projects, or invoices, remove it from Clients
-    if (companyName) {
-      try {
-        const otherLeadsCount = await prisma.lead.count({
-          where: {
-            workspaceId: session.workspaceId,
-            companyName: { equals: companyName, mode: 'insensitive' },
-          },
-        });
-
-        if (otherLeadsCount === 0) {
-          const company = await prisma.company.findFirst({
-            where: {
-              workspaceId: session.workspaceId,
-              name: { equals: companyName, mode: 'insensitive' },
-            },
-            include: {
-              deals: { select: { id: true }, take: 1 },
-              projects: { select: { id: true }, take: 1 },
-              invoices: { select: { id: true }, take: 1 },
-              contacts: { select: { id: true }, take: 1 },
-              proposals: { select: { id: true }, take: 1 },
-            },
-          });
-
-          if (
-            company &&
-            company.deals.length === 0 &&
-            company.projects.length === 0 &&
-            company.invoices.length === 0 &&
-            company.contacts.length === 0 &&
-            company.proposals.length === 0
-          ) {
-            await prisma.company.delete({ where: { id: company.id } });
-          }
-        }
-      } catch (cleanupErr) {
-        console.warn('[Lead Delete] Non-critical company cleanup warning:', cleanupErr);
-      }
-    }
 
     return NextResponse.json({
       success: true,
