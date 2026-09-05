@@ -207,7 +207,7 @@ export async function DELETE(req: Request) {
           content: `Permanently removed client organization: "${company.name}" and all associated records.`,
         },
       });
-    });
+    }, { timeout: 25000, maxWait: 10000 });
 
     return NextResponse.json({
       success: true,

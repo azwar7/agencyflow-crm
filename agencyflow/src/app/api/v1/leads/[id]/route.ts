@@ -121,59 +121,64 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     const companyName = existingLead.companyName?.trim();
 
-    // Perform atomic hard delete of Lead and associated records
-    await prisma.$transaction(async (tx) => {
-      // 1. Delete associated outreach emails, activities, tasks, and AI analyses
-      await tx.outreachEmail.deleteMany({ where: { leadId: id } });
-      await tx.activity.deleteMany({ where: { leadId: id } });
-      await tx.task.deleteMany({ where: { leadId: id } });
-      await tx.leadAiAnalysis.deleteMany({ where: { leadId: id } });
+    // 1. Delete associated child records concurrently (outreach emails, activities, tasks, AI analyses, custom fields)
+    await Promise.all([
+      prisma.outreachEmail.deleteMany({ where: { leadId: id, workspaceId: session.workspaceId } }),
+      prisma.activity.deleteMany({ where: { leadId: id, workspaceId: session.workspaceId } }),
+      prisma.task.deleteMany({ where: { leadId: id, workspaceId: session.workspaceId } }),
+      prisma.leadAiAnalysis.deleteMany({ where: { leadId: id, workspaceId: session.workspaceId } }),
+      prisma.customFieldValue.deleteMany({ where: { recordId: id, workspaceId: session.workspaceId } }),
+    ]);
 
-      // 2. Delete the lead itself from the database
-      await tx.lead.delete({ where: { id } });
+    // 2. Delete the lead itself from the database
+    await prisma.lead.delete({
+      where: { id },
+    });
 
-      // 3. If lead had an associated company, check if it should also be removed from Clients section
-      if (companyName) {
-        // Check if other leads in this workspace share this company name
-        const otherLeadsCount = await tx.lead.count({
+    // 3. Optional Safe Cleanup: If company has no other leads, deals, projects, or invoices, remove it from Clients
+    if (companyName) {
+      try {
+        const otherLeadsCount = await prisma.lead.count({
           where: {
             workspaceId: session.workspaceId,
-            id: { not: id },
             companyName: { equals: companyName, mode: 'insensitive' },
           },
         });
 
-        // If no other leads exist, find the Company in this workspace
         if (otherLeadsCount === 0) {
-          const company = await tx.company.findFirst({
+          const company = await prisma.company.findFirst({
             where: {
               workspaceId: session.workspaceId,
               name: { equals: companyName, mode: 'insensitive' },
             },
             include: {
-              deals: { select: { id: true } },
-              projects: { select: { id: true } },
-              invoices: { select: { id: true } },
+              deals: { select: { id: true }, take: 1 },
+              projects: { select: { id: true }, take: 1 },
+              invoices: { select: { id: true }, take: 1 },
+              contacts: { select: { id: true }, take: 1 },
+              proposals: { select: { id: true }, take: 1 },
             },
           });
 
-          // Only delete company from Clients if it has no active deals, projects, or invoices
           if (
             company &&
             company.deals.length === 0 &&
             company.projects.length === 0 &&
-            company.invoices.length === 0
+            company.invoices.length === 0 &&
+            company.contacts.length === 0 &&
+            company.proposals.length === 0
           ) {
-            await tx.contact.deleteMany({ where: { companyId: company.id } });
-            await tx.company.delete({ where: { id: company.id } });
+            await prisma.company.delete({ where: { id: company.id } });
           }
         }
+      } catch (cleanupErr) {
+        console.warn('[Lead Delete] Non-critical company cleanup warning:', cleanupErr);
       }
-    });
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Lead and associated client records permanently deleted from database',
+      message: 'Lead permanently deleted from database',
     });
   } catch (error: any) {
     const isUnauthorized = error.message?.includes('Unauthorized') || error.message?.includes('session');
