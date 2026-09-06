@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 interface AgencyFlowLogoProps {
   height?: number;
+  fontSize?: number | string;
   href?: string;
   className?: string;
   style?: React.CSSProperties;
@@ -11,13 +12,18 @@ interface AgencyFlowLogoProps {
 
 export default function AgencyFlowLogo({
   height = 36,
+  fontSize,
   href = '/',
   className = '',
   style,
   showWordmark = true,
 }: AgencyFlowLogoProps) {
+  const resolvedFontSize = fontSize
+    ? (typeof fontSize === 'number' ? `${fontSize}px` : fontSize)
+    : `${Math.max(14, Math.round(height * 0.48))}px`;
+
   const brandContent = (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '9px' }}>
       <img
         src="/official-agencyflow-logo.jpg?v=5"
         alt="AgencyFlow Logo"
@@ -40,7 +46,7 @@ export default function AgencyFlowLogo({
         <span
           style={{
             fontFamily: "'Hanken Grotesk', sans-serif",
-            fontSize: `${Math.max(18, Math.round(height * 0.65))}px`,
+            fontSize: resolvedFontSize,
             fontWeight: 700,
             color: '#e2e2e8',
             letterSpacing: '-0.02em',

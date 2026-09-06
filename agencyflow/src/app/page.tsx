@@ -95,7 +95,7 @@ export default function LandingPage() {
         >
           {/* 1. LEFT SECTION (Absolute Left Anchor) */}
           <div style={{ justifySelf: 'start' }}>
-            <AgencyFlowLogo height={38} href="/" />
+            <AgencyFlowLogo height={32} fontSize={17} href="/" />
           </div>
 
           {/* 2. CENTER SECTION (True Viewport Centered) */}
