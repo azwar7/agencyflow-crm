@@ -195,10 +195,16 @@ export function LeadFinderProvider({ children }: { children: React.ReactNode }) 
   );
 }
 
+const defaultContext: LeadFinderContextType = {
+  activeJob: null,
+  isJobRunning: false,
+  isWidgetOpen: false,
+  setIsWidgetOpen: () => {},
+  startJob: async () => ({ success: false, error: 'LeadFinderProvider not mounted' }),
+  dismissJob: async () => {},
+};
+
 export function useLeadFinder() {
   const context = useContext(LeadFinderContext);
-  if (!context) {
-    throw new Error('useLeadFinder must be used within a LeadFinderProvider');
-  }
-  return context;
+  return context || defaultContext;
 }

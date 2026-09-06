@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/context/AuthContext';
+import { LeadFinderProvider } from '@/context/LeadFinderContext';
 import { NavigationProgress } from '@/components/NavigationProgress';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import './globals.css';
@@ -31,8 +32,10 @@ export default function RootLayout({
       <body className="bg-background text-on-background">
         <ErrorBoundary>
           <AuthProvider>
-            <NavigationProgress />
-            {children}
+            <LeadFinderProvider>
+              <NavigationProgress />
+              {children}
+            </LeadFinderProvider>
           </AuthProvider>
         </ErrorBoundary>
       </body>

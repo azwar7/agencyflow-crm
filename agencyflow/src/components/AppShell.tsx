@@ -110,43 +110,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <LeadFinderProvider>
-      <div className="app-layout">
-        <Sidebar />
-        <div className="app-main">
-          <SampleDataBanner />
-          <Header
-            onOpenNewLead={() => {
-              setLeadModalTab('manual');
-              setIsLeadModalOpen(true);
-            }}
-            onOpenNewDeal={() => setIsDealModalOpen(true)}
-            activeRole={activeRole}
-            onRoleChange={setActiveRole}
-          />
-          <main className="page-container">{children}</main>
-        </div>
-
-        <NewLeadModal
-          isOpen={isLeadModalOpen}
-          initialTab={leadModalTab}
-          onClose={() => setIsLeadModalOpen(false)}
-          onSuccess={handleModalSuccess}
+    <div className="app-layout">
+      <Sidebar />
+      <div className="app-main">
+        <SampleDataBanner />
+        <Header
+          onOpenNewLead={() => {
+            setLeadModalTab('manual');
+            setIsLeadModalOpen(true);
+          }}
+          onOpenNewDeal={() => setIsDealModalOpen(true)}
+          activeRole={activeRole}
+          onRoleChange={setActiveRole}
         />
-
-        <NewDealModal
-          isOpen={isDealModalOpen}
-          onClose={() => setIsDealModalOpen(false)}
-          onSuccess={handleModalSuccess}
-        />
-
-        <OnboardingModal onStartTour={() => setIsTourOpen(true)} />
-        <ProductTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
-        <GettingStartedWidget />
-
-        {/* Global Persistent Floating AI Lead Finder Background Activity Widget */}
-        <LeadFinderStatusWidget />
+        <main className="page-container">{children}</main>
       </div>
-    </LeadFinderProvider>
+
+      <NewLeadModal
+        isOpen={isLeadModalOpen}
+        initialTab={leadModalTab}
+        onClose={() => setIsLeadModalOpen(false)}
+        onSuccess={handleModalSuccess}
+      />
+
+      <NewDealModal
+        isOpen={isDealModalOpen}
+        onClose={() => setIsDealModalOpen(false)}
+        onSuccess={handleModalSuccess}
+      />
+
+      <OnboardingModal onStartTour={() => setIsTourOpen(true)} />
+      <ProductTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
+      <GettingStartedWidget />
+
+      {/* Global Persistent Floating AI Lead Finder Background Activity Widget */}
+      <LeadFinderStatusWidget />
+    </div>
   );
 }
