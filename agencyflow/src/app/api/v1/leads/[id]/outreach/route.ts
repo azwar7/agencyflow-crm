@@ -10,7 +10,7 @@ export async function GET(
     const session = await getAuthSession(request);
     const { id: leadId } = await params;
 
-    const [lead, outreachHistory, analyses] = await Promise.all([
+    const [lead, outreachHistory, analyses, tasks] = await Promise.all([
       prisma.lead.findFirst({
         where: { id: leadId, workspaceId: session.workspaceId },
         select: { id: true },
@@ -22,6 +22,10 @@ export async function GET(
       prisma.leadAiAnalysis.findMany({
         where: { leadId, workspaceId: session.workspaceId },
         orderBy: { createdAt: 'desc' },
+      }),
+      prisma.task.findMany({
+        where: { leadId, workspaceId: session.workspaceId },
+        orderBy: { dueDate: 'asc' },
       }),
     ]);
 
@@ -37,6 +41,7 @@ export async function GET(
       data: {
         outreach: outreachHistory,
         analyses,
+        tasks,
       },
     });
   } catch (error: any) {

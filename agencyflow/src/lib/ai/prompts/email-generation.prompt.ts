@@ -10,6 +10,9 @@ export interface EmailGenerationPromptOptions {
   customInstructions?: string;
   senderName?: string;
   agencyName?: string;
+  isFollowUp?: boolean;
+  previousSubject?: string;
+  previousBody?: string;
 }
 
 export interface EmailGenerationPromptResult {
@@ -28,8 +31,31 @@ export function buildEmailGenerationPrompt(
   const tone = options.tone || 'professional';
   const agencyName = options.agencyName || 'AgencyFlow';
   const senderName = options.senderName || 'Account Representative';
+  const isFollowUp = Boolean(options.isFollowUp);
 
-  const systemPrompt = `You are a world-class B2B Cold Outreach Copywriter for ${agencyName}.
+  const systemPrompt = isFollowUp
+    ? `You are an expert B2B Sales Follow-Up Specialist for ${agencyName}.
+You write authentic, respectful, concise follow-up reminder emails from (${senderName}) to prospective business decision-makers.
+
+CRITICAL FOLLOW-UP RULES:
+1. CONCISE & RESPECTFUL: Keep the follow-up between 45 and 90 words. Decision-makers appreciate brevity.
+2. CONTEXTUAL CONTINUITY: Acknowledge that you previously reached out, without sounding passive-aggressive or guilt-tripping (NEVER use "per my last email" or "I see you haven't responded").
+3. REINFORCE CORE VALUE: Briefly remind them of the single core pain point or high-impact solution discussed.
+4. LOW-FRICTION QUESTION: Propose a short 5-to-10 minute chat or ask if timing is better next week.
+5. SUBJECT LINE: Prefix with "Re: " followed by the original subject, or a clean follow-up subject (e.g. "Following up: next steps for ${options.context.lead.companyName || 'your team'}").
+
+OUTPUT JSON FORMAT REQUIREMENTS:
+You MUST respond with a JSON object conforming strictly to this exact shape:
+{
+  "subject": "Re: [Previous Subject or clean follow-up subject]",
+  "body": "Hi [Name],\n\nConcise 45-90 word follow-up body...\n\nBest,\n[Sender]",
+  "callToAction": "Low friction 5-10 minute chat question",
+  "recommendedService": "Primary agency service",
+  "personalizationPoints": ["Follow-up touchpoint", "Relevant timing reference"]
+}
+
+Output ONLY valid, parseable JSON conforming strictly to this shape.`
+    : `You are a world-class B2B Cold Outreach Copywriter for ${agencyName}.
 You write authentic, concise, highly personalized outreach emails from agency founder/rep (${senderName}) to prospective business decision-makers.
 
 CRITICAL COPYWRITING RULES:
@@ -57,7 +83,30 @@ You MUST respond with a JSON object conforming strictly to this exact shape:
 
 Output ONLY valid, parseable JSON conforming strictly to this shape.`;
 
-  const userPrompt = `Draft a personalized outreach email for the following prospect:
+  const userPrompt = isFollowUp
+    ? `Draft a follow-up reminder email for the following prospect:
+
+### PROSPECT_DATA
+- Contact Name: ${options.context.lead.fullName || options.context.lead.firstName || 'Business Owner'}
+- Company: ${options.context.lead.companyName || 'Your Business'}
+- Website: ${options.context.company?.domain || 'Online'}
+- Status: ${options.context.lead.status}
+
+### PREVIOUS_OUTREACH_CONTEXT
+- Previous Subject: ${options.previousSubject || 'Initial Outreach'}
+- Previous Note Summary: ${options.previousBody ? options.previousBody.slice(0, 300) : 'Initial introductory email proposing high-impact agency workflow improvements.'}
+
+### DESIRED_TONE
+${tone}
+
+${
+  options.customInstructions
+    ? `### CUSTOM_INSTRUCTIONS\n${options.customInstructions}\n### END_CUSTOM_INSTRUCTIONS\n`
+    : ''
+}
+
+Generate a concise, high-converting follow-up reminder email in strict JSON format matching the schema.`
+    : `Draft a personalized outreach email for the following prospect:
 
 ### PROSPECT_DATA
 - Contact Name: ${options.context.lead.fullName || options.context.lead.firstName || 'Business Owner'}

@@ -7,6 +7,8 @@ import { isEmailAvailable, formatLeadEmail } from '@/lib/lead-utils';
 const sendOutreachSchema = z.object({
   outreachId: z.string().min(1, 'outreachId is required'),
   forceSend: z.boolean().optional().default(true),
+  reminderDays: z.number().int().min(1).max(30).optional().default(3),
+  isFollowUp: z.boolean().optional().default(false),
 });
 
 export async function POST(
@@ -248,7 +250,12 @@ export async function POST(
       );
     }
 
-    // 4. Update OutreachEmail to SENT, progress Lead to OUTREACH_SENT, and log timeline Activity
+    // 4. Calculate reminder schedule
+    const reminderDueDate = new Date();
+    reminderDueDate.setDate(reminderDueDate.getDate() + (validated.reminderDays || 3));
+    reminderDueDate.setHours(9, 0, 0, 0);
+
+    // 5. Update OutreachEmail to SENT, progress Lead, handle reminder Task & Activity
     const [updatedOutreach, updatedLead] = await prisma.$transaction([
       prisma.outreachEmail.update({
         where: { id: outreach.id },
@@ -270,17 +277,71 @@ export async function POST(
           userId: session.userId,
           leadId: lead.id,
           type: 'EMAIL',
-          content: `Outreach email approved & dispatched to ${lead.email}: "${outreach.subject}"`,
+          content: validated.isFollowUp
+            ? `Follow-up reminder email approved & dispatched to ${lead.email}: "${outreach.subject}"`
+            : `Outreach email approved & dispatched to ${lead.email}: "${outreach.subject}"`,
         },
       }),
     ]);
 
+    let reminderTask = null;
+
+    if (validated.isFollowUp) {
+      // Complete existing pending follow-up tasks for this lead
+      await prisma.task.updateMany({
+        where: {
+          workspaceId: session.workspaceId,
+          leadId: lead.id,
+          status: 'PENDING',
+        },
+        data: {
+          status: 'COMPLETED',
+        },
+      });
+
+      await prisma.activity.create({
+        data: {
+          workspaceId: session.workspaceId,
+          userId: session.userId,
+          leadId: lead.id,
+          type: 'TASK',
+          content: `Follow-up reminder task marked completed following reminder email dispatch.`,
+        },
+      });
+    } else {
+      // Auto-schedule follow-up reminder task
+      reminderTask = await prisma.task.create({
+        data: {
+          workspaceId: session.workspaceId,
+          assignedToId: lead.assignedToId || session.userId,
+          leadId: lead.id,
+          title: `Follow up with ${lead.firstName} ${lead.lastName || ''} on "${outreach.subject}"`.trim(),
+          dueDate: reminderDueDate,
+          priority: 'HIGH',
+          status: 'PENDING',
+        },
+      });
+
+      await prisma.activity.create({
+        data: {
+          workspaceId: session.workspaceId,
+          userId: session.userId,
+          leadId: lead.id,
+          type: 'TASK',
+          content: `Follow-up reminder scheduled for ${reminderDueDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}: "Follow up on '${outreach.subject}'"`,
+        },
+      });
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Outreach email dispatched to ${lead.email}. Lead progressed to Outreach Sent.`,
+      message: validated.isFollowUp
+        ? `Follow-up reminder email dispatched to ${lead.email}. Reminder task marked completed.`
+        : `Outreach email dispatched to ${lead.email}. Follow-up reminder scheduled for ${reminderDueDate.toLocaleDateString([], { month: 'short', day: 'numeric' })}.`,
       data: {
         outreach: updatedOutreach,
         lead: updatedLead,
+        reminderTask,
         deliveryChannel: 'n8n_webhook',
         sentToday: sentToday + 1,
         dailyLimit,

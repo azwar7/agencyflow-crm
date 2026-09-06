@@ -20,6 +20,9 @@ const generateEmailSchema = z.object({
   tone: z.enum(['professional', 'conversational', 'direct']).default('professional'),
   customInstructions: z.string().optional(),
   provider: z.enum(['mock', 'openai', 'anthropic', 'gemini', 'huggingface']).optional(),
+  isFollowUp: z.boolean().optional(),
+  previousSubject: z.string().optional(),
+  previousBody: z.string().optional(),
 });
 
 export async function POST(
@@ -108,7 +111,7 @@ export async function POST(
     // 6. Build sanitized LeadContext
     const leadContext = await buildLeadContext(leadId, session);
 
-    // 7. Build prompt for human-sounding, anti-spam cold outreach
+    // 7. Build prompt for human-sounding, anti-spam cold outreach or follow-up reminder
     const prompt = buildEmailGenerationPrompt({
       context: leadContext,
       intelligence: intelligenceData,
@@ -116,6 +119,9 @@ export async function POST(
       customInstructions: validated.customInstructions,
       senderName: workspace?.emailSenderName || existingLead.assignedTo?.fullName || session.fullName || 'Account Representative',
       agencyName: existingLead.workspace?.name || 'AgencyFlow',
+      isFollowUp: validated.isFollowUp,
+      previousSubject: validated.previousSubject,
+      previousBody: validated.previousBody,
     });
 
     // 8. Resolve provider

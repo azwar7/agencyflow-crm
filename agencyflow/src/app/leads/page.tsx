@@ -29,6 +29,8 @@ import {
   GripVertical,
   Loader2,
   Bot,
+  Calendar,
+  Bell,
 } from 'lucide-react';
 import { getCachedData, setCachedData } from '@/lib/client-cache';
 import { isEmailAvailable, formatLeadEmail } from '@/lib/lead-utils';
@@ -76,6 +78,9 @@ export default function LeadsPage() {
   const [outreachHistory, setOutreachHistory] = useState<any[]>([]);
   const [copied, setCopied] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isComposingFollowUp, setIsComposingFollowUp] = useState(false);
+  const [reminderDays, setReminderDays] = useState(3);
+  const [reschedulingReminder, setReschedulingReminder] = useState(false);
 
   // Active Dropdown Menu State
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -262,6 +267,7 @@ export default function LeadsPage() {
       setEmailBody('');
     }
 
+    setIsComposingFollowUp(false);
     setDrawerLoading(true);
 
     // 3. BACKGROUND REVALIDATE (Non-blocking):
@@ -305,6 +311,11 @@ export default function LeadsPage() {
               setEmailBody(draftOrLatest.body);
               if (draftOrLatest.tone) setSelectedTone(draftOrLatest.tone);
             }
+
+            return {
+              ...prev,
+              tasks: outreachJson.data.tasks || prev?.tasks || [],
+            };
           }
           return prev;
         });
@@ -394,20 +405,37 @@ export default function LeadsPage() {
       const approveJson = await approveRes.json();
       if (!approveRes.ok || !approveJson.success) throw new Error(approveJson.error?.message || 'Failed to approve email');
 
-      // Step B: Dispatch email via n8n workflow and progress stage to OUTREACH_SENT
+      // Step B: Dispatch email via n8n workflow, create reminder task, and progress stage
       const sendRes = await fetch(`/api/v1/leads/${selectedLead.id}/outreach/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           outreachId: currentOutreach.id,
+          reminderDays: reminderDays || 3,
+          isFollowUp: isComposingFollowUp,
         }),
       });
       const sendJson = await sendRes.json();
       if (!sendRes.ok || !sendJson.success) throw new Error(sendJson.error?.message || 'Failed to dispatch email');
 
+      const wasFollowUp = isComposingFollowUp;
       setCurrentOutreach(sendJson.data.outreach);
-      setSelectedLead((prev: any) => ({ ...prev, status: 'OUTREACH_SENT' }));
-      setFeedbackMsg({ type: 'success', text: '🚀 Email approved & sent! Lead moved to Outreach Sent stage.' });
+      setIsComposingFollowUp(false);
+      setSelectedLead((prev: any) => ({
+        ...prev,
+        status: 'OUTREACH_SENT',
+        tasks: sendJson.data.reminderTask
+          ? [sendJson.data.reminderTask, ...(prev?.tasks || [])]
+          : (prev?.tasks || []).map((t: any) =>
+              wasFollowUp && t.status === 'PENDING' ? { ...t, status: 'COMPLETED' } : t
+            ),
+      }));
+      setFeedbackMsg({
+        type: 'success',
+        text: wasFollowUp
+          ? '🚀 Follow-up reminder email sent! Reminder task marked completed.'
+          : '🚀 Outreach email approved & sent! Follow-up reminder scheduled.',
+      });
       // Invalidate cache on new outreach dispatch
       outreachCacheRef.current.delete(selectedLead.id);
       leadCacheRef.current.delete(selectedLead.id);
@@ -420,6 +448,121 @@ export default function LeadsPage() {
       }
     } finally {
       setSendingEmail(false);
+    }
+  };
+
+  // 4. Draft AI Follow-Up Reminder Email
+  const handleDraftFollowUpReminder = async () => {
+    if (!selectedLead) return;
+    setGeneratingEmail(true);
+    setFeedbackMsg(null);
+    try {
+      const lastSent = outreachHistory.find((o) => o.status === 'SENT') || currentOutreach;
+      const res = await fetch(`/api/v1/leads/${selectedLead.id}/ai/generate-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tone: selectedTone,
+          isFollowUp: true,
+          previousSubject: lastSent?.subject || 'Initial Outreach',
+          previousBody: lastSent?.body || '',
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error?.message || 'Failed to generate follow-up reminder');
+
+      setCurrentOutreach(json.data);
+      setEmailSubject(json.data.subject);
+      setEmailBody(json.data.body);
+      setIsComposingFollowUp(true);
+      setOutreachHistory((prev) => [json.data, ...prev]);
+      setFeedbackMsg({
+        type: 'success',
+        text: '⚡ AI Follow-Up Reminder draft ready! Review below and click "Send Reminder 🚀".',
+      });
+    } catch (err: any) {
+      setFeedbackMsg({ type: 'error', text: err.message || 'Failed to draft follow-up reminder' });
+    } finally {
+      setGeneratingEmail(false);
+    }
+  };
+
+  const handleCancelFollowUpDraft = () => {
+    setIsComposingFollowUp(false);
+    const sentEmail = outreachHistory.find((o) => o.status === 'SENT');
+    if (sentEmail) {
+      setCurrentOutreach(sentEmail);
+      setEmailSubject(sentEmail.subject);
+      setEmailBody(sentEmail.body);
+    }
+    setFeedbackMsg(null);
+  };
+
+  // 5. Quick Reschedule Follow-Up Reminder Task
+  const handleRescheduleReminder = async (taskId: string, daysToAdd: number) => {
+    if (!selectedLead) return;
+    setReschedulingReminder(true);
+    try {
+      const newDueDate = new Date();
+      newDueDate.setDate(newDueDate.getDate() + daysToAdd);
+      newDueDate.setHours(9, 0, 0, 0);
+
+      const res = await fetch('/api/v1/tasks', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId,
+          dueDate: newDueDate.toISOString(),
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error?.message || 'Failed to reschedule reminder');
+
+      setSelectedLead((prev: any) => ({
+        ...prev,
+        tasks: (prev?.tasks || []).map((t: any) =>
+          t.id === taskId ? { ...t, dueDate: newDueDate.toISOString() } : t
+        ),
+      }));
+      setFeedbackMsg({
+        type: 'success',
+        text: `⏰ Reminder rescheduled to ${newDueDate.toLocaleDateString([], { month: 'short', day: 'numeric' })}`,
+      });
+      outreachCacheRef.current.delete(selectedLead.id);
+      leadCacheRef.current.delete(selectedLead.id);
+    } catch (err: any) {
+      setFeedbackMsg({ type: 'error', text: err.message || 'Failed to reschedule reminder' });
+    } finally {
+      setReschedulingReminder(false);
+    }
+  };
+
+  // 6. Complete Reminder Task Manually
+  const handleCompleteReminder = async (taskId: string) => {
+    if (!selectedLead) return;
+    try {
+      const res = await fetch('/api/v1/tasks', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId,
+          status: 'COMPLETED',
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error?.message || 'Failed to complete task');
+
+      setSelectedLead((prev: any) => ({
+        ...prev,
+        tasks: (prev?.tasks || []).map((t: any) =>
+          t.id === taskId ? { ...t, status: 'COMPLETED' } : t
+        ),
+      }));
+      setFeedbackMsg({ type: 'success', text: '✓ Follow-up reminder marked completed.' });
+      outreachCacheRef.current.delete(selectedLead.id);
+      leadCacheRef.current.delete(selectedLead.id);
+    } catch (err: any) {
+      setFeedbackMsg({ type: 'error', text: err.message || 'Failed to complete reminder task' });
     }
   };
 
@@ -1370,41 +1513,258 @@ export default function LeadsPage() {
                     </div>
                   )}
 
-                  {/* Email Settings Controls */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600 }}>Tone:</span>
-                      {(['professional', 'conversational', 'direct'] as const).map((tone) => (
-                        <button
-                          key={tone}
-                          onClick={() => setSelectedTone(tone)}
-                          style={{
-                            padding: '0.25rem 0.6rem',
-                            fontSize: '0.75rem',
-                            borderRadius: '4px',
-                            background: selectedTone === tone ? 'rgba(56, 189, 248, 0.2)' : 'var(--surface-container-high)',
-                            border: selectedTone === tone ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
-                            color: selectedTone === tone ? '#38bdf8' : 'var(--on-surface-variant)',
-                            cursor: 'pointer',
-                            textTransform: 'capitalize',
-                            fontWeight: selectedTone === tone ? 700 : 500,
-                          }}
-                        >
-                          {tone}
-                        </button>
-                      ))}
+                  {/* Email Settings & Reminder Controls */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600 }}>Tone:</span>
+                        {(['professional', 'conversational', 'direct'] as const).map((tone) => (
+                          <button
+                            key={tone}
+                            onClick={() => setSelectedTone(tone)}
+                            style={{
+                              padding: '0.25rem 0.6rem',
+                              fontSize: '0.75rem',
+                              borderRadius: '4px',
+                              background: selectedTone === tone ? 'rgba(56, 189, 248, 0.2)' : 'var(--surface-container-high)',
+                              border: selectedTone === tone ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
+                              color: selectedTone === tone ? '#38bdf8' : 'var(--on-surface-variant)',
+                              cursor: 'pointer',
+                              textTransform: 'capitalize',
+                              fontWeight: selectedTone === tone ? 700 : 500,
+                            }}
+                          >
+                            {tone}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Reminder interval for initial pitch */}
+                      {currentOutreach?.status !== 'SENT' && !isComposingFollowUp && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>
+                          <Clock size={13} color="#fbbf24" />
+                          <span>Reminder:</span>
+                          <select
+                            value={reminderDays}
+                            onChange={(e) => setReminderDays(Number(e.target.value))}
+                            style={{
+                              background: 'var(--surface-container-high)',
+                              border: '1px solid rgba(255, 255, 255, 0.12)',
+                              borderRadius: '4px',
+                              color: '#fff',
+                              fontSize: '0.72rem',
+                              padding: '0.2rem 0.4rem',
+                              outline: 'none',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <option value={2}>+2 days</option>
+                            <option value={3}>+3 days (default)</option>
+                            <option value={5}>+5 days</option>
+                            <option value={7}>+1 week</option>
+                          </select>
+                        </div>
+                      )}
                     </div>
 
                     <button
-                      onClick={handleGenerateEmail}
+                      onClick={isComposingFollowUp ? handleDraftFollowUpReminder : handleGenerateEmail}
                       disabled={generatingEmail}
                       className="btn btn-secondary"
                       style={{ padding: '0.3rem 0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
                     >
                       <RefreshCw size={12} className={generatingEmail ? 'animate-spin' : ''} />
-                      {generatingEmail ? 'Drafting AI Copy...' : emailBody ? 'Regenerate Copy' : 'Generate Email'}
+                      {generatingEmail
+                        ? 'Drafting AI Copy...'
+                        : isComposingFollowUp
+                        ? 'Regenerate Reminder'
+                        : emailBody
+                        ? 'Regenerate Copy'
+                        : 'Generate Email'}
                     </button>
                   </div>
+
+                  {/* Follow-Up Reminder Banner (When Lead has an Outreach Email Sent) */}
+                  {(() => {
+                    const pendingReminder = (selectedLead?.tasks || []).find(
+                      (t: any) =>
+                        t.status === 'PENDING' &&
+                        (t.title?.toLowerCase().includes('follow up') || t.title?.toLowerCase().includes('reminder'))
+                    );
+                    const completedReminder = (selectedLead?.tasks || []).find(
+                      (t: any) =>
+                        t.status === 'COMPLETED' &&
+                        (t.title?.toLowerCase().includes('follow up') || t.title?.toLowerCase().includes('reminder'))
+                    );
+                    const hasDeliveredEmail = currentOutreach?.status === 'SENT' || outreachHistory.some((o) => o.status === 'SENT');
+
+                    if (!hasDeliveredEmail && !pendingReminder && !completedReminder) return null;
+
+                    const isOverdue = pendingReminder && new Date(pendingReminder.dueDate) < new Date();
+                    const isDueToday =
+                      pendingReminder &&
+                      Math.abs(new Date(pendingReminder.dueDate).getTime() - Date.now()) < 24 * 3600 * 1000;
+
+                    return (
+                      <div
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(56, 189, 248, 0.05))',
+                          border: '1px solid rgba(251, 191, 36, 0.25)',
+                          borderRadius: '8px',
+                          padding: '0.85rem 1rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.65rem',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <div
+                              style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '6px',
+                                background: pendingReminder ? 'rgba(251, 191, 36, 0.18)' : 'rgba(78, 222, 163, 0.18)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: pendingReminder ? '#fbbf24' : '#4edea3',
+                              }}
+                            >
+                              {pendingReminder ? <Clock size={16} /> : <CheckCircle2 size={16} />}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span>Follow-Up Reminder</span>
+                                {pendingReminder ? (
+                                  <span
+                                    style={{
+                                      fontSize: '0.68rem',
+                                      fontWeight: 800,
+                                      padding: '0.12rem 0.5rem',
+                                      borderRadius: '9999px',
+                                      background: isOverdue
+                                        ? 'rgba(239, 68, 68, 0.2)'
+                                        : isDueToday
+                                        ? 'rgba(251, 191, 36, 0.25)'
+                                        : 'rgba(56, 189, 248, 0.2)',
+                                      color: isOverdue ? '#f87171' : isDueToday ? '#fbbf24' : '#38bdf8',
+                                      border: '1px solid currentColor',
+                                    }}
+                                  >
+                                    {isOverdue ? 'OVERDUE' : isDueToday ? 'DUE TODAY' : 'SCHEDULED'}
+                                  </span>
+                                ) : completedReminder ? (
+                                  <span
+                                    style={{
+                                      fontSize: '0.68rem',
+                                      fontWeight: 800,
+                                      padding: '0.12rem 0.5rem',
+                                      borderRadius: '9999px',
+                                      background: 'rgba(78, 222, 163, 0.2)',
+                                      color: '#4edea3',
+                                      border: '1px solid currentColor',
+                                    }}
+                                  >
+                                    COMPLETED
+                                  </span>
+                                ) : null}
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.15rem' }}>
+                                {pendingReminder
+                                  ? `Scheduled for ${new Date(pendingReminder.dueDate).toLocaleDateString([], {
+                                      weekday: 'short',
+                                      month: 'short',
+                                      day: 'numeric',
+                                    })} (${Math.max(0, Math.ceil((new Date(pendingReminder.dueDate).getTime() - Date.now()) / (1000 * 3600 * 24)))} days remaining)`
+                                  : completedReminder
+                                  ? `Follow-up reminder completed on ${new Date(completedReminder.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}`
+                                  : 'Auto-reminder scheduled upon email dispatch'}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Quick Reschedule & Mark Done Actions */}
+                          {pendingReminder && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                              <span style={{ fontSize: '0.7rem', color: 'var(--on-surface-variant)', marginRight: '0.2rem' }}>Reschedule:</span>
+                              {[
+                                { label: '+2d', days: 2 },
+                                { label: '+3d', days: 3 },
+                                { label: '+7d', days: 7 },
+                              ].map((item) => (
+                                <button
+                                  key={item.label}
+                                  disabled={reschedulingReminder}
+                                  onClick={() => handleRescheduleReminder(pendingReminder.id, item.days)}
+                                  style={{
+                                    padding: '0.2rem 0.45rem',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 600,
+                                    borderRadius: '4px',
+                                    background: 'var(--surface-container-high)',
+                                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                                    color: '#e2e2e8',
+                                    cursor: 'pointer',
+                                  }}
+                                  title={`Reschedule reminder to ${item.days} days from now`}
+                                >
+                                  {item.label}
+                                </button>
+                              ))}
+                              <button
+                                onClick={() => handleCompleteReminder(pendingReminder.id)}
+                                style={{
+                                  padding: '0.2rem 0.5rem',
+                                  fontSize: '0.7rem',
+                                  fontWeight: 600,
+                                  borderRadius: '4px',
+                                  background: 'rgba(78, 222, 163, 0.15)',
+                                  border: '1px solid rgba(78, 222, 163, 0.3)',
+                                  color: '#4edea3',
+                                  cursor: 'pointer',
+                                  marginLeft: '0.2rem',
+                                }}
+                                title="Mark reminder task as completed"
+                              >
+                                ✓ Done
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Send Follow-Up Reminder CTA Row */}
+                        {currentOutreach?.status === 'SENT' && !isComposingFollowUp && (
+                          <div style={{ marginTop: '0.2rem', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
+                              Ready to follow up? Generate and send the reminder email referencing this pitch:
+                            </span>
+                            <button
+                              onClick={handleDraftFollowUpReminder}
+                              disabled={generatingEmail}
+                              className="btn btn-primary"
+                              style={{
+                                padding: '0.35rem 0.85rem',
+                                fontSize: '0.775rem',
+                                fontWeight: 700,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
+                                border: 'none',
+                                color: '#030712',
+                                boxShadow: '0 0 15px rgba(56, 189, 248, 0.3)',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {generatingEmail ? <RefreshCw size={12} className="animate-spin" /> : <Sparkles size={13} />}
+                              {generatingEmail ? 'Drafting Reminder...' : '⚡ Send Follow-Up Reminder'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Email Composer & Live Editor */}
                   {generatingEmail ? (
@@ -1412,8 +1772,41 @@ export default function LeadsPage() {
                   ) : emailBody || emailSubject ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--surface-container-high)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
                       
+                      {/* Follow-Up Composer Indicator Banner */}
+                      {isComposingFollowUp && (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.65rem 0.85rem',
+                            background: 'rgba(56, 189, 248, 0.12)',
+                            border: '1px solid rgba(56, 189, 248, 0.35)',
+                            borderRadius: '6px',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8', fontSize: '0.825rem', fontWeight: 600 }}>
+                            <Sparkles size={16} />
+                            <span>Follow-Up Reminder Draft (Step 2 in Sequence)</span>
+                          </div>
+                          <button
+                            onClick={handleCancelFollowUpDraft}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: 'var(--on-surface-variant)',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                            }}
+                          >
+                            Cancel & View Sent Email
+                          </button>
+                        </div>
+                      )}
+
                       {/* Delivery Status Banner */}
-                      {currentOutreach?.status === 'SENT' && (
+                      {currentOutreach?.status === 'SENT' && !isComposingFollowUp && (
                         <div
                           style={{
                             display: 'flex',
@@ -1472,14 +1865,14 @@ export default function LeadsPage() {
                           type="text"
                           value={emailSubject}
                           onChange={(e) => setEmailSubject(e.target.value)}
-                          readOnly={currentOutreach?.status === 'SENT'}
+                          readOnly={currentOutreach?.status === 'SENT' && !isComposingFollowUp}
                           style={{
                             width: '100%',
                             padding: '0.5rem 0.75rem',
                             background: 'var(--surface-container-lowest)',
                             border: '1px solid rgba(255, 255, 255, 0.12)',
                             borderRadius: '6px',
-                            color: currentOutreach?.status === 'SENT' ? '#a1a1aa' : '#fff',
+                            color: currentOutreach?.status === 'SENT' && !isComposingFollowUp ? '#a1a1aa' : '#fff',
                             fontSize: '0.875rem',
                             fontWeight: 600,
                             outline: 'none',
@@ -1490,20 +1883,20 @@ export default function LeadsPage() {
                       {/* Email Body Textarea */}
                       <div>
                         <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)', marginBottom: '0.3rem' }}>
-                          Personalized Email Body:
+                          {isComposingFollowUp ? 'Follow-Up Reminder Email Body:' : 'Personalized Email Body:'}
                         </label>
                         <textarea
                           rows={8}
                           value={emailBody}
                           onChange={(e) => setEmailBody(e.target.value)}
-                          readOnly={currentOutreach?.status === 'SENT'}
+                          readOnly={currentOutreach?.status === 'SENT' && !isComposingFollowUp}
                           style={{
                             width: '100%',
                             padding: '0.75rem',
                             background: 'var(--surface-container-lowest)',
                             border: '1px solid rgba(255, 255, 255, 0.12)',
                             borderRadius: '6px',
-                            color: currentOutreach?.status === 'SENT' ? '#a1a1aa' : '#e2e2e8',
+                            color: currentOutreach?.status === 'SENT' && !isComposingFollowUp ? '#a1a1aa' : '#e2e2e8',
                             fontSize: '0.85rem',
                             lineHeight: 1.6,
                             outline: 'none',
@@ -1534,7 +1927,7 @@ export default function LeadsPage() {
                         </button>
 
                         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                          {currentOutreach?.status === 'SENT' ? (
+                          {currentOutreach?.status === 'SENT' && !isComposingFollowUp ? (
                             <>
                               <button
                                 disabled
@@ -1555,14 +1948,14 @@ export default function LeadsPage() {
                                 <Check size={14} /> Email Sent
                               </button>
                               <button
-                                onClick={handleGenerateEmail}
+                                onClick={handleDraftFollowUpReminder}
                                 disabled={generatingEmail}
                                 style={{
                                   padding: '0.5rem 0.9rem',
                                   borderRadius: '6px',
-                                  background: 'var(--surface-container-highest)',
-                                  color: '#fff',
-                                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                                  background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2))',
+                                  color: '#38bdf8',
+                                  border: '1px solid rgba(56, 189, 248, 0.35)',
                                   fontSize: '0.825rem',
                                   fontWeight: 600,
                                   cursor: 'pointer',
@@ -1571,7 +1964,7 @@ export default function LeadsPage() {
                                   gap: '0.4rem',
                                 }}
                               >
-                                <Sparkles size={14} color="#38bdf8" /> Draft Follow-up
+                                <Sparkles size={14} color="#38bdf8" /> Draft Follow-Up Reminder
                               </button>
                             </>
                           ) : (
@@ -1580,12 +1973,14 @@ export default function LeadsPage() {
                               disabled={sendingEmail || !isEmailAvailable(selectedLead.email)}
                               title={!isEmailAvailable(selectedLead.email) ? 'Direct email outreach disabled: Lead email is not available.' : ''}
                               style={{
-                                padding: '0.5rem 1rem',
+                                padding: '0.5rem 1.1rem',
                                 borderRadius: '6px',
                                 background: !isEmailAvailable(selectedLead.email)
                                   ? '#334155'
                                   : currentOutreach?.status === 'FAILED'
                                   ? '#f87171'
+                                  : isComposingFollowUp
+                                  ? 'linear-gradient(135deg, #38bdf8, #818cf8)'
                                   : '#38bdf8',
                                 color: !isEmailAvailable(selectedLead.email)
                                   ? '#94a3b8'
@@ -1603,6 +1998,8 @@ export default function LeadsPage() {
                                   ? 'none'
                                   : currentOutreach?.status === 'FAILED'
                                   ? '0 0 20px rgba(248, 113, 113, 0.3)'
+                                  : isComposingFollowUp
+                                  ? '0 0 22px rgba(56, 189, 248, 0.4)'
                                   : '0 0 20px rgba(56, 189, 248, 0.3)',
                               }}
                             >
@@ -1617,6 +2014,8 @@ export default function LeadsPage() {
                                 ? 'Email Not Available'
                                 : currentOutreach?.status === 'FAILED'
                                 ? 'Retry Send 🚀'
+                                : isComposingFollowUp
+                                ? 'Send Reminder 🚀'
                                 : 'Approve & Send 🚀'}
                             </button>
                           )}
@@ -1660,44 +2059,79 @@ export default function LeadsPage() {
                             gap: '0.4rem',
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span
-                              style={{
-                                fontSize: '0.7rem',
-                                fontWeight: 800,
-                                padding: '0.15rem 0.5rem',
-                                borderRadius: '4px',
-                                textTransform: 'uppercase',
-                                background:
-                                  item.status === 'SENT'
-                                    ? 'rgba(78, 222, 163, 0.15)'
-                                    : item.status === 'APPROVED'
-                                    ? 'rgba(56, 189, 248, 0.15)'
-                                    : item.status === 'FAILED'
-                                    ? 'rgba(255, 180, 171, 0.15)'
-                                    : 'rgba(208, 188, 255, 0.15)',
-                                color:
-                                  item.status === 'SENT'
-                                    ? '#4edea3'
-                                    : item.status === 'APPROVED'
-                                    ? '#38bdf8'
-                                    : item.status === 'FAILED'
-                                    ? '#ffb4ab'
-                                    : '#d0bcff',
-                              }}
-                            >
-                              {item.status}
-                            </span>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span
+                                style={{
+                                  fontSize: '0.7rem',
+                                  fontWeight: 800,
+                                  padding: '0.15rem 0.5rem',
+                                  borderRadius: '4px',
+                                  textTransform: 'uppercase',
+                                  background:
+                                    item.status === 'SENT'
+                                      ? 'rgba(78, 222, 163, 0.15)'
+                                      : item.status === 'APPROVED'
+                                      ? 'rgba(56, 189, 248, 0.15)'
+                                      : item.status === 'FAILED'
+                                      ? 'rgba(255, 180, 171, 0.15)'
+                                      : 'rgba(208, 188, 255, 0.15)',
+                                  color:
+                                    item.status === 'SENT'
+                                      ? '#4edea3'
+                                      : item.status === 'APPROVED'
+                                      ? '#38bdf8'
+                                      : item.status === 'FAILED'
+                                      ? '#ffb4ab'
+                                      : '#d0bcff',
+                                }}
+                              >
+                                {item.status}
+                              </span>
+                              {(item.subject?.toLowerCase().startsWith('re:') || item.subject?.toLowerCase().includes('following up')) ? (
+                                <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: '4px', background: 'rgba(56, 189, 248, 0.18)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+                                  REMINDER
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--on-surface-variant)' }}>
+                                  INITIAL PITCH
+                                </span>
+                              )}
+                            </div>
                             <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>
                               {new Date(item.createdAt).toLocaleDateString()} at {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', marginTop: '0.2rem' }}>
                             Subject: {item.subject}
                           </div>
-                          <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', lineHeight: 1.4, margin: 0 }}>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', lineHeight: 1.4, margin: '0.2rem 0' }}>
                             {item.body.length > 150 ? `${item.body.substring(0, 150)}...` : item.body}
                           </p>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.2rem' }}>
+                            <button
+                              onClick={() => {
+                                setCurrentOutreach(item);
+                                setEmailSubject(item.subject);
+                                setEmailBody(item.body);
+                                setIsComposingFollowUp(false);
+                                setDrawerTab('outreach');
+                              }}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#38bdf8',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              Open in editor <ArrowRight size={12} />
+                            </button>
+                          </div>
                         </div>
                       ))
                     )}
