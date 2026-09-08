@@ -111,7 +111,7 @@ export function renderProposalHtml(data: ProposalDocumentData): string {
       <style>
         @page {
           size: A4 portrait;
-          margin: 16mm 16mm 18mm 16mm;
+          margin: 0;
         }
         * {
           box-sizing: border-box;
@@ -132,6 +132,7 @@ export function renderProposalHtml(data: ProposalDocumentData): string {
           max-width: 100%;
           margin: 0 auto;
           background: #ffffff;
+          padding: 14mm 14mm 16mm 14mm;
         }
         .break-inside-avoid {
           break-inside: avoid;

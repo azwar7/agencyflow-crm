@@ -54,7 +54,7 @@ export function renderInvoiceHtml(data: InvoiceDocumentData): string {
       <style>
         @page {
           size: A4 portrait;
-          margin: 14mm 14mm 16mm 14mm;
+          margin: 0;
         }
         * {
           box-sizing: border-box;
@@ -75,6 +75,7 @@ export function renderInvoiceHtml(data: InvoiceDocumentData): string {
           max-width: 100%;
           margin: 0 auto;
           background: #ffffff;
+          padding: 14mm 14mm 16mm 14mm;
         }
         .break-inside-avoid {
           break-inside: avoid;

@@ -110,7 +110,12 @@ export function wrapInPrintableHtml(title: string, bodyHtml: string, autoPrint =
     }
 
     @media print {
-      body {
+      @page {
+        size: A4 portrait;
+        margin: 0 !important;
+      }
+
+      html, body {
         background: #ffffff !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -156,6 +161,7 @@ export function wrapInPrintableHtml(title: string, bodyHtml: string, autoPrint =
       Print / Save as PDF
     </button>
     <button class="btn-close" onclick="window.close()">✕ Close</button>
+    <span style="color: #94a3b8; font-size: 11px; margin-left: 4px; display: none;" id="hdr-tip">Tip: Uncheck &quot;Headers and footers&quot; in print settings</span>
   </div>
 
   <div class="document-paper-wrapper">
