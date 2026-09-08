@@ -66,34 +66,41 @@ export default function InvoicesPage() {
   const handleDownloadPdf = async (invoiceId: string, download = true) => {
     try {
       setDownloadingPdfId(invoiceId);
-      const endpoint = `/api/v1/invoices/${encodeURIComponent(invoiceId)}/pdf${download ? '?download=true' : ''}`;
+      const safeId = encodeURIComponent(invoiceId);
 
       if (!download) {
-        window.open(endpoint, '_blank');
+        // Direct full-page A4 HTML preview in a new window
+        window.open(`/api/v1/invoices/${safeId}/pdf?format=html`, '_blank');
         return;
       }
 
+      const endpoint = `/api/v1/invoices/${safeId}/pdf?download=true`;
       const res = await fetch(endpoint);
-      if (!res.ok) {
-        const errorJson = await res.json().catch(() => ({}));
-        throw new Error(errorJson.error?.message || 'Failed to generate invoice PDF');
-      }
+      const contentType = res.headers.get('content-type') || '';
 
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Invoice-${invoiceId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      setFeedbackMsg({ type: 'success', text: `✓ Invoice ${invoiceId} PDF downloaded successfully!` });
-      setTimeout(() => setFeedbackMsg(null), 4000);
+      if (res.ok && contentType.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Invoice-${invoiceId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        setFeedbackMsg({ type: 'success', text: `✓ Invoice ${invoiceId} PDF downloaded successfully!` });
+        setTimeout(() => setFeedbackMsg(null), 4000);
+      } else {
+        // Fallback for Vercel Serverless: opens dedicated print-ready A4 document with auto-print
+        window.open(`/api/v1/invoices/${safeId}/pdf?format=html&autoPrint=true`, '_blank');
+        setFeedbackMsg({ type: 'success', text: `✓ Opening print-ready A4 document. Choose "Save as PDF" in your print dialog.` });
+        setTimeout(() => setFeedbackMsg(null), 6000);
+      }
     } catch (err: any) {
-      console.error('Invoice PDF generation error:', err);
-      setFeedbackMsg({ type: 'error', text: err.message || 'Error generating invoice PDF' });
-      setTimeout(() => setFeedbackMsg(null), 5000);
+      console.warn('Invoice PDF download fallback triggered:', err);
+      window.open(`/api/v1/invoices/${encodeURIComponent(invoiceId)}/pdf?format=html&autoPrint=true`, '_blank');
+      setFeedbackMsg({ type: 'success', text: `✓ Opening print-ready A4 document. Choose "Save as PDF" to save.` });
+      setTimeout(() => setFeedbackMsg(null), 6000);
     } finally {
       setDownloadingPdfId(null);
     }

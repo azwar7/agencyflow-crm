@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getAuthSession } from '@/lib/auth-session';
 import { renderProposalHtml } from '@/components/proposals/pdf/ProposalDocument';
 import { generatePdfFromHtml } from '@/lib/pdf/generate-pdf';
+import { wrapInPrintableHtml } from '@/lib/pdf/html-wrapper';
 import { ProposalDocumentData, ProposalScopePhase, ProposalPricingItem } from '@/lib/pdf/types';
 
 interface RouteContext {
@@ -169,48 +170,76 @@ export async function GET(request: Request, context: RouteContext) {
 
     const htmlContent = renderProposalHtml(proposalData);
 
-    const pdfBuffer = await generatePdfFromHtml(htmlContent, {
-      title: `Proposal-${proposalData.client.name.replace(/\s+/g, '_')}`,
-      displayHeaderFooter: true,
-      headerTemplate: `
-        <div style="font-size: 8px; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 16mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-          <span>${proposalData.issuer.name} • Statement of Work</span>
-          <span>${proposalData.proposalNumber}</span>
-        </div>
-      `,
-      footerTemplate: `
-        <div style="font-size: 8px; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 16mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-          <span>Confidential • Prepared for ${proposalData.client.name}</span>
-          <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
-        </div>
-      `,
-      margins: {
-        top: '20mm',
-        bottom: '22mm',
-        left: '15mm',
-        right: '15mm',
-      },
-    });
-
     const url = new URL(request.url);
     const isDownload = url.searchParams.get('download') === 'true';
-    const disposition = isDownload ? 'attachment' : 'inline';
+    const isHtmlFormat = url.searchParams.get('format') === 'html';
+    const autoPrint = url.searchParams.get('autoPrint') === 'true';
     const safeClientName = proposalData.client.name.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const docTitle = `Proposal — ${proposalData.client.name}`;
 
-    return new NextResponse(new Uint8Array(pdfBuffer), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `${disposition}; filename="Proposal-${safeClientName}.pdf"`,
-        'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-      },
-    });
+    // If HTML format is explicitly requested, return the standalone printable HTML view immediately
+    if (isHtmlFormat) {
+      return new NextResponse(wrapInPrintableHtml(docTitle, htmlContent, autoPrint), {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+      });
+    }
+
+    try {
+      const pdfBuffer = await generatePdfFromHtml(htmlContent, {
+        title: `Proposal-${safeClientName}`,
+        displayHeaderFooter: true,
+        headerTemplate: `
+          <div style="font-size: 8px; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 16mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <span>${proposalData.issuer.name} • Statement of Work</span>
+            <span>${proposalData.proposalNumber}</span>
+          </div>
+        `,
+        footerTemplate: `
+          <div style="font-size: 8px; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 16mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <span>Confidential • Prepared for ${proposalData.client.name}</span>
+            <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
+          </div>
+        `,
+        margins: {
+          top: '20mm',
+          bottom: '22mm',
+          left: '15mm',
+          right: '15mm',
+        },
+      });
+
+      const disposition = isDownload ? 'attachment' : 'inline';
+
+      return new NextResponse(new Uint8Array(pdfBuffer), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `${disposition}; filename="Proposal-${safeClientName}.pdf"`,
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+      });
+    } catch (pdfError: any) {
+      console.warn('Chromium PDF generation unavailable in this environment, falling back to print-optimized HTML:', pdfError?.message);
+      // Seamless serverless fallback: Return standalone print-ready HTML with auto-print
+      return new NextResponse(wrapInPrintableHtml(docTitle, htmlContent, isDownload || autoPrint), {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'X-Pdf-Fallback': 'true',
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+      });
+    }
   } catch (error: any) {
-    console.error('Proposal PDF Generation Error:', error);
+    console.error('Proposal Route Error:', error);
     const isUnauthorized = error.message?.includes('Unauthorized') || error.message?.includes('session');
     const status = isUnauthorized ? 401 : 500;
     return NextResponse.json(
-      { success: false, error: { message: error.message || 'Failed to generate proposal PDF' } },
+      { success: false, error: { message: error.message || 'Failed to process proposal request' } },
       { status }
     );
   }

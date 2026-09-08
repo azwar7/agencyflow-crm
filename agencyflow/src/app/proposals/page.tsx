@@ -113,34 +113,42 @@ export default function ProposalsPage() {
   const handleDownloadPdf = async (proposal: ProposalItem, download = true) => {
     try {
       setDownloadingPdf(true);
-      const endpoint = `/api/v1/proposals/${encodeURIComponent(proposal.id)}/pdf${download ? '?download=true' : ''}`;
+      const safeId = encodeURIComponent(proposal.id);
 
       if (!download) {
-        window.open(endpoint, '_blank');
+        // Direct full-page A4 HTML preview in a new window
+        window.open(`/api/v1/proposals/${safeId}/pdf?format=html`, '_blank');
         return;
       }
 
+      const endpoint = `/api/v1/proposals/${safeId}/pdf?download=true`;
       const res = await fetch(endpoint);
-      if (!res.ok) {
-        const errorJson = await res.json().catch(() => ({}));
-        throw new Error(errorJson.error?.message || 'Failed to generate proposal PDF');
-      }
+      const contentType = res.headers.get('content-type') || '';
 
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      const safeName = proposal.client.replace(/[^a-zA-Z0-9_-]/g, '_');
-      link.download = `Proposal-${safeName}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      setSuccessBanner(`✓ Proposal for "${proposal.client}" downloaded as print-optimized A4 PDF!`);
-      setTimeout(() => setSuccessBanner(null), 5000);
+      if (res.ok && contentType.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const safeName = proposal.client.replace(/[^a-zA-Z0-9_-]/g, '_');
+        link.download = `Proposal-${safeName}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        setSuccessBanner(`✓ Proposal for "${proposal.client}" downloaded as A4 PDF!`);
+        setTimeout(() => setSuccessBanner(null), 5000);
+      } else {
+        // Fallback for Vercel Serverless: opens dedicated print-ready A4 document with auto-print
+        window.open(`/api/v1/proposals/${safeId}/pdf?format=html&autoPrint=true`, '_blank');
+        setSuccessBanner(`✓ Opening print-ready A4 document. Choose "Save as PDF" in your print dialog.`);
+        setTimeout(() => setSuccessBanner(null), 6000);
+      }
     } catch (err: any) {
-      console.error('Proposal PDF download error:', err);
-      alert(`PDF Generation Error: ${err.message}`);
+      console.warn('PDF download fallback triggered:', err);
+      window.open(`/api/v1/proposals/${encodeURIComponent(proposal.id)}/pdf?format=html&autoPrint=true`, '_blank');
+      setSuccessBanner(`✓ Opening print-ready A4 document. Choose "Save as PDF" to save.`);
+      setTimeout(() => setSuccessBanner(null), 6000);
     } finally {
       setDownloadingPdf(false);
     }

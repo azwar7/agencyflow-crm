@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getAuthSession } from '@/lib/auth-session';
 import { renderInvoiceHtml } from '@/components/invoices/pdf/InvoiceDocument';
 import { generatePdfFromHtml } from '@/lib/pdf/generate-pdf';
+import { wrapInPrintableHtml } from '@/lib/pdf/html-wrapper';
 import { InvoiceDocumentData } from '@/lib/pdf/types';
 
 interface RouteContext {
@@ -91,28 +92,55 @@ export async function GET(request: Request, context: RouteContext) {
 
     const htmlContent = renderInvoiceHtml(invoiceData);
 
-    const pdfBuffer = await generatePdfFromHtml(htmlContent, {
-      title: `Invoice-${invoiceData.invoiceNumber}`,
-    });
-
     const url = new URL(request.url);
     const isDownload = url.searchParams.get('download') === 'true';
-    const disposition = isDownload ? 'attachment' : 'inline';
+    const isHtmlFormat = url.searchParams.get('format') === 'html';
+    const autoPrint = url.searchParams.get('autoPrint') === 'true';
+    const docTitle = `Invoice #${invoiceData.invoiceNumber}`;
 
-    return new NextResponse(new Uint8Array(pdfBuffer), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `${disposition}; filename="Invoice-${invoiceData.invoiceNumber}.pdf"`,
-        'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-      },
-    });
+    // If HTML format is explicitly requested, return the standalone printable HTML view immediately
+    if (isHtmlFormat) {
+      return new NextResponse(wrapInPrintableHtml(docTitle, htmlContent, autoPrint), {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+      });
+    }
+
+    try {
+      const pdfBuffer = await generatePdfFromHtml(htmlContent, {
+        title: `Invoice-${invoiceData.invoiceNumber}`,
+      });
+
+      const disposition = isDownload ? 'attachment' : 'inline';
+
+      return new NextResponse(new Uint8Array(pdfBuffer), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `${disposition}; filename="Invoice-${invoiceData.invoiceNumber}.pdf"`,
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+      });
+    } catch (pdfError: any) {
+      console.warn('Chromium PDF generation unavailable in this environment, falling back to print-optimized HTML:', pdfError?.message);
+      return new NextResponse(wrapInPrintableHtml(docTitle, htmlContent, isDownload || autoPrint), {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'X-Pdf-Fallback': 'true',
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+      });
+    }
   } catch (error: any) {
-    console.error('Invoice PDF Generation Error:', error);
+    console.error('Invoice Route Error:', error);
     const isUnauthorized = error.message?.includes('Unauthorized') || error.message?.includes('session');
     const status = isUnauthorized ? 401 : 500;
     return NextResponse.json(
-      { success: false, error: { message: error.message || 'Failed to generate invoice PDF' } },
+      { success: false, error: { message: error.message || 'Failed to process invoice request' } },
       { status }
     );
   }

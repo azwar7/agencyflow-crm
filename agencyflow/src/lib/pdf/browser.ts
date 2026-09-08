@@ -1,12 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 
-// Common Windows locations for Google Chrome & Microsoft Edge as resilient fallbacks
-const COMMON_WINDOWS_EXECUTABLES = [
+// Common locations for Google Chrome & Microsoft Edge as resilient fallbacks
+const COMMON_EXECUTABLES = [
+  // Windows
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
   'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
   'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+  // Linux / Docker / Server
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/usr/bin/chromium-browser',
+  '/snap/bin/chromium',
 ];
 
 function getSystemExecutablePath(): string | undefined {
@@ -14,7 +20,7 @@ function getSystemExecutablePath(): string | undefined {
     return process.env.PUPPETEER_EXECUTABLE_PATH;
   }
 
-  for (const exePath of COMMON_WINDOWS_EXECUTABLES) {
+  for (const exePath of COMMON_EXECUTABLES) {
     if (fs.existsSync(exePath)) {
       return exePath;
     }
