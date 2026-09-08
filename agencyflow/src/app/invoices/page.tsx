@@ -61,6 +61,43 @@ export default function InvoicesPage() {
 
   // Remind / Feedback Alert
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [downloadingPdfId, setDownloadingPdfId] = useState<string | null>(null);
+
+  const handleDownloadPdf = async (invoiceId: string, download = true) => {
+    try {
+      setDownloadingPdfId(invoiceId);
+      const endpoint = `/api/v1/invoices/${encodeURIComponent(invoiceId)}/pdf${download ? '?download=true' : ''}`;
+
+      if (!download) {
+        window.open(endpoint, '_blank');
+        return;
+      }
+
+      const res = await fetch(endpoint);
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => ({}));
+        throw new Error(errorJson.error?.message || 'Failed to generate invoice PDF');
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Invoice-${invoiceId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setFeedbackMsg({ type: 'success', text: `✓ Invoice ${invoiceId} PDF downloaded successfully!` });
+      setTimeout(() => setFeedbackMsg(null), 4000);
+    } catch (err: any) {
+      console.error('Invoice PDF generation error:', err);
+      setFeedbackMsg({ type: 'error', text: err.message || 'Error generating invoice PDF' });
+      setTimeout(() => setFeedbackMsg(null), 5000);
+    } finally {
+      setDownloadingPdfId(null);
+    }
+  };
 
   const fetchInvoices = async () => {
     setLoading(true);
@@ -491,6 +528,21 @@ export default function InvoicesPage() {
                         )}
 
                         <button
+                          onClick={() => handleDownloadPdf(inv.realId || inv.id, true)}
+                          disabled={downloadingPdfId === (inv.realId || inv.id)}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+                          title="Download Official A4 PDF"
+                        >
+                          {downloadingPdfId === (inv.realId || inv.id) ? (
+                            <RefreshCw size={12} className="spin" />
+                          ) : (
+                            <Download size={12} />
+                          )}
+                          PDF
+                        </button>
+
+                        <button
                           onClick={() => setSelectedInvoice(inv)}
                           className="btn btn-secondary"
                           style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
@@ -540,11 +592,42 @@ export default function InvoicesPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <button
-                    onClick={() => window.print()}
+                    onClick={() => handleDownloadPdf(selectedInvoice.realId || selectedInvoice.id, true)}
+                    disabled={downloadingPdfId === (selectedInvoice.realId || selectedInvoice.id)}
+                    className="btn btn-primary"
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      fontSize: '0.75rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      background: '#8b5cf6',
+                      color: '#ffffff',
+                      border: 'none',
+                      fontWeight: 700,
+                      cursor: downloadingPdfId === (selectedInvoice.realId || selectedInvoice.id) ? 'wait' : 'pointer',
+                      opacity: downloadingPdfId === (selectedInvoice.realId || selectedInvoice.id) ? 0.7 : 1,
+                    }}
+                    title="Download official print-optimized A4 PDF"
+                  >
+                    {downloadingPdfId === (selectedInvoice.realId || selectedInvoice.id) ? (
+                      <>
+                        <RefreshCw size={13} className="spin" /> Generating PDF...
+                      </>
+                    ) : (
+                      <>
+                        <Download size={14} /> Download PDF
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => handleDownloadPdf(selectedInvoice.realId || selectedInvoice.id, false)}
                     className="btn btn-secondary"
                     style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                    title="Preview in full browser window"
                   >
-                    <Printer size={14} /> Print / PDF
+                    <ExternalLink size={13} /> Preview A4
                   </button>
 
                   {selectedInvoice.status !== 'PAID' && (

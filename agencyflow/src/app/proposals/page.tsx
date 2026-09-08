@@ -107,6 +107,45 @@ export default function ProposalsPage() {
   const [signing, setSigning] = useState(false);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
 
+  // PDF Generation State
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadPdf = async (proposal: ProposalItem, download = true) => {
+    try {
+      setDownloadingPdf(true);
+      const endpoint = `/api/v1/proposals/${encodeURIComponent(proposal.id)}/pdf${download ? '?download=true' : ''}`;
+
+      if (!download) {
+        window.open(endpoint, '_blank');
+        return;
+      }
+
+      const res = await fetch(endpoint);
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => ({}));
+        throw new Error(errorJson.error?.message || 'Failed to generate proposal PDF');
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const safeName = proposal.client.replace(/[^a-zA-Z0-9_-]/g, '_');
+      link.download = `Proposal-${safeName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setSuccessBanner(`✓ Proposal for "${proposal.client}" downloaded as print-optimized A4 PDF!`);
+      setTimeout(() => setSuccessBanner(null), 5000);
+    } catch (err: any) {
+      console.error('Proposal PDF download error:', err);
+      alert(`PDF Generation Error: ${err.message}`);
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   // Fetch Proposals & Leads
   const fetchProposals = async () => {
     setLoading(true);
@@ -634,15 +673,48 @@ export default function ProposalsPage() {
                       </button>
                     )}
 
-                    {/* Print / Export Button */}
+                    {/* Download & Preview PDF Buttons */}
                     {!isEditing && (
-                      <button
-                        onClick={() => window.print()}
-                        className="btn btn-secondary"
-                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                      >
-                        <Printer size={14} /> Print / PDF
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleDownloadPdf(selectedProposal, true)}
+                          disabled={downloadingPdf}
+                          className="btn btn-primary"
+                          style={{
+                            padding: '0.35rem 0.75rem',
+                            fontSize: '0.75rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            background: '#8b5cf6',
+                            color: '#ffffff',
+                            border: 'none',
+                            fontWeight: 700,
+                            cursor: downloadingPdf ? 'wait' : 'pointer',
+                            opacity: downloadingPdf ? 0.7 : 1,
+                          }}
+                          title="Download official print-optimized A4 PDF"
+                        >
+                          {downloadingPdf ? (
+                            <>
+                              <RefreshCw size={13} className="spin" /> Generating PDF...
+                            </>
+                          ) : (
+                            <>
+                              <Download size={14} /> Download PDF
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          onClick={() => handleDownloadPdf(selectedProposal, false)}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                          title="Preview in full browser window"
+                        >
+                          <ExternalLink size={13} /> Preview A4
+                        </button>
+                      </>
                     )}
 
                     {/* Send to Client Button */}
