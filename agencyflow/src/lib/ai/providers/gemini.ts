@@ -32,7 +32,7 @@ export class GeminiAiProvider extends BaseAiProvider {
   }
 
   public getDefaultModel(): string {
-    return 'gemini-2.5-flash';
+    return process.env.GEMINI_MODEL || 'gemini-3.6-flash';
   }
 
   public async generateStructured<T>(
@@ -58,17 +58,28 @@ export class GeminiAiProvider extends BaseAiProvider {
       'CRITICAL: Return valid parseable JSON only. Do not format with markdown fences or extra explanations.',
     ].join('\n\n');
 
+    const timeoutMs = options.timeoutMs || 15000;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      const timer = setTimeout(() => {
+        reject(new AiTimeoutError(`Gemini request timed out after ${timeoutMs}ms`, this.name));
+      }, timeoutMs);
+      if (typeof timer.unref === 'function') timer.unref();
+    });
+
     try {
-      const response = await this.client.models.generateContent({
-        model,
-        contents: options.userPrompt,
-        config: {
-          systemInstruction,
-          responseMimeType: 'application/json',
-          temperature: options.temperature ?? 0.2,
-          maxOutputTokens: options.maxTokens ?? 1500,
-        },
-      });
+      const response = await Promise.race([
+        this.client.models.generateContent({
+          model,
+          contents: options.userPrompt,
+          config: {
+            systemInstruction,
+            responseMimeType: 'application/json',
+            temperature: options.temperature ?? 0.2,
+            maxOutputTokens: options.maxTokens ?? 1500,
+          },
+        }),
+        timeoutPromise,
+      ]);
 
       const rawText = response.text || '';
       const validatedData = this.parseAndValidateJson(rawText, options.schema);
@@ -89,6 +100,7 @@ export class GeminiAiProvider extends BaseAiProvider {
         latencyMs: this.getElapsedMs(startTime),
       };
     } catch (err: any) {
+      console.error('[GeminiAiProvider] generateStructured caught error:', err);
       this.handleGeminiError(err);
     }
   }

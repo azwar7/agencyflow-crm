@@ -78,11 +78,11 @@ export async function GET(request: Request) {
       },
       {
         id: 'gemini',
-        name: 'Google Gemini 2.5',
+        name: 'Google Gemini',
         category: 'AI',
         description: 'High-speed structured lead analysis, qualification scoring, and proposal pitch generation.',
         status: geminiConnected ? 'CONNECTED' : 'NOT_CONFIGURED',
-        details: geminiConnected ? 'Active model: gemini-2.5-flash' : 'GEMINI_API_KEY not configured',
+        details: geminiConnected ? `Active model: ${process.env.GEMINI_MODEL || 'gemini-3.6-flash'}` : 'GEMINI_API_KEY not configured',
         lastChecked: nowIso,
       },
       {

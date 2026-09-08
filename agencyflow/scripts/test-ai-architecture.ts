@@ -130,7 +130,7 @@ async function runAiArchitectureTests() {
 
   const geminiProvider = aiService.getProvider('gemini');
   assert(geminiProvider.name === 'gemini', 'Gemini provider registered in AiService');
-  assert(geminiProvider.getDefaultModel() === 'gemini-2.5-flash', 'Gemini default model configured');
+  assert(geminiProvider.getDefaultModel() === (process.env.GEMINI_MODEL || 'gemini-3.6-flash'), 'Gemini default model configured');
 
   const hfProvider = aiService.getProvider('huggingface');
   assert(hfProvider.name === 'huggingface', 'Hugging Face provider registered in AiService');

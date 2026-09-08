@@ -166,8 +166,9 @@ Instructions:
 4. If the user asks about money/invoices, calculate the exact totals from the invoices list.
 5. If the user asks about clients (e.g. Mohmand, Apex, Elevate, Vanguard), cross-reference their leads, projects, and invoices.`;
 
+        const geminiModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiApiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

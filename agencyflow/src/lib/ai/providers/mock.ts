@@ -133,7 +133,41 @@ export class MockAiProvider extends BaseAiProvider {
         paymentTerms: '50% upfront deposit on contract signing ($11,250), 25% upon Phase 2 milestone review ($5,625), and 25% upon final live deployment ($5,625).',
         estimatedWeeks: 6,
       };
-    } else if (options.userPrompt.includes('lead') || options.systemPrompt?.includes('lead')) {
+    } else if (
+      options.userPrompt.toLowerCase().includes('email') ||
+      options.userPrompt.toLowerCase().includes('outreach') ||
+      options.userPrompt.toLowerCase().includes('followup') ||
+      options.userPrompt.toLowerCase().includes('follow-up') ||
+      options.systemPrompt?.toLowerCase().includes('email') ||
+      options.systemPrompt?.toLowerCase().includes('outreach') ||
+      options.systemPrompt?.toLowerCase().includes('follow-up')
+    ) {
+      const isFollowUp =
+        options.userPrompt.toLowerCase().includes('follow-up') ||
+        options.userPrompt.toLowerCase().includes('followup') ||
+        options.systemPrompt?.toLowerCase().includes('follow-up') ||
+        options.systemPrompt?.toLowerCase().includes('followup');
+
+      mockPayload = {
+        subject: isFollowUp
+          ? 'Re: Strategic Growth Roadmap & Follow-up'
+          : 'Executive Briefing & Strategic Growth Roadmap',
+        body: isFollowUp
+          ? 'Hi there,\n\nI wanted to briefly follow up on my previous note regarding your agency workflow objectives. Based on our preliminary review, our team has prepared a tailored rollout plan to streamline your client acquisition and retention pipeline.\n\nWould you be open to a brief 10-minute touchpoint this Thursday to review the roadmap?'
+          : 'Thank you for discussing your agency workflow objectives. Based on our review, our team has prepared a tailored rollout plan to streamline your client acquisition and retention pipeline.',
+        callToAction: 'Would you be open to a brief 10-minute touchpoint this Thursday to review the roadmap?',
+        recommendedService: 'Workflow Automation & CRM Pipeline Integration',
+        personalizationPoints: [
+          'Tailored multi-tenant architecture',
+          'Automated sales pipeline tracking and outreach cadence',
+        ],
+        tone: options.userPrompt.toLowerCase().includes('urgent') ? 'urgent' : options.userPrompt.toLowerCase().includes('friendly') ? 'friendly' : 'executive',
+        keyTalkingPoints: [
+          'End-to-end lead lifecycle tracking',
+          'Real-time pipeline analytics',
+        ],
+      };
+    } else if (options.userPrompt.toLowerCase().includes('lead') || options.systemPrompt?.toLowerCase().includes('lead')) {
       mockPayload = {
         score: 88,
         summary: 'High-value enterprise prospect with verified corporate domain and active executive interest.',
@@ -147,16 +181,6 @@ export class MockAiProvider extends BaseAiProvider {
         ],
         recommendedNextAction: 'Schedule a 20-minute executive briefing with senior leadership.',
         confidence: 0.95,
-      };
-    } else if (options.userPrompt.includes('followup') || options.userPrompt.includes('email') || options.systemPrompt?.includes('email')) {
-      mockPayload = {
-        subject: 'Executive Briefing & Strategic Growth Roadmap',
-        body: 'Thank you for discussing your agency workflow objectives. Based on our review, our team has prepared a tailored rollout plan.',
-        tone: options.userPrompt.includes('urgent') ? 'urgent' : options.userPrompt.includes('friendly') ? 'friendly' : 'executive',
-        keyTalkingPoints: [
-          'End-to-end lead lifecycle tracking',
-          'Real-time pipeline analytics',
-        ],
       };
     } else if (options.userPrompt.includes('copilot') || options.systemPrompt?.includes('copilot')) {
       mockPayload = {
