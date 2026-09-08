@@ -261,17 +261,20 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
       animate();
     };
 
-    // Load Three.js dynamically
+    // Load Three.js from local vendor bundle ('self' compliant with CSP)
     if ((window as any).THREE) {
       initScene((window as any).THREE);
     } else {
       const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      script.src = '/vendor/three.min.js';
       script.async = true;
       script.onload = () => {
         if (!isCancelled && (window as any).THREE) {
           initScene((window as any).THREE);
         }
+      };
+      script.onerror = (e) => {
+        console.error('Failed to load /vendor/three.min.js', e);
       };
       document.head.appendChild(script);
     }
@@ -369,6 +372,7 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
                 position: 'absolute',
                 left: 0,
                 top: 0,
+                opacity: 0,
                 willChange: 'transform, opacity',
                 pointerEvents: 'none',
                 display: 'flex',
