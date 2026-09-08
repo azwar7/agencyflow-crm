@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import AgencyFlowLogo from '@/components/AgencyFlowLogo';
+import HeroPipelineFlow from '@/components/HeroPipelineFlow';
 import { useAuth } from '@/context/AuthContext';
 import { Settings, LogOut, LayoutDashboard } from 'lucide-react';
 import {
@@ -428,101 +429,8 @@ export default function LandingPage() {
             }}
           />
 
-          {/* Main Headline */}
-          <h1
-            style={{
-              fontFamily: "'Hanken Grotesk', sans-serif",
-              fontSize: 'clamp(40px, 6vw, 72px)',
-              fontWeight: 800,
-              lineHeight: 1.1,
-              letterSpacing: '-0.04em',
-              color: '#e2e2e8',
-              maxWidth: '900px',
-              marginBottom: '24px',
-              margin: '0 auto 24px auto',
-            }}
-          >
-            One Workspace. Every Client. <br />
-            <span
-              style={{
-                background: 'linear-gradient(90deg, #d0bcff 0%, #4edea3 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Zero Chaos.
-            </span>
-          </h1>
-
-          {/* Subtitle Paragraph */}
-          <p
-            style={{
-              fontSize: '18px',
-              lineHeight: '1.6',
-              color: '#cbc3d7',
-              maxWidth: '640px',
-              margin: '0 auto 40px auto',
-            }}
-          >
-            AgencyFlow brings leads, clients, proposals, projects, tasks, invoices, and your team together in one powerful workspace built for modern agencies.
-          </p>
-
-          {/* CTA Buttons */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '16px',
-              flexWrap: 'wrap',
-              width: '100%',
-              marginBottom: '24px',
-            }}
-          >
-            <Link
-              href="/signup"
-              style={{
-                padding: '16px 32px',
-                background: '#d0bcff',
-                color: '#3c0091',
-                fontFamily: "'Geist', sans-serif",
-                fontWeight: 600,
-                fontSize: '14px',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                boxShadow: '0 0 30px rgba(208, 188, 255, 0.25)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.3s',
-              }}
-            >
-              Start Free{' '}
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                arrow_forward
-              </span>
-            </Link>
-            <a
-              href="#features"
-              style={{
-                padding: '16px 32px',
-                background: 'transparent',
-                border: '1px solid #494454',
-                color: '#e2e2e8',
-                fontFamily: "'Geist', sans-serif",
-                fontWeight: 500,
-                fontSize: '14px',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.3s',
-              }}
-            >
-              Explore AgencyFlow
-            </a>
-          </div>
+          {/* New 2-Column Hero Pipeline & Readout Section */}
+          <HeroPipelineFlow isAuthenticated={isAuthenticated} />
 
 
 
