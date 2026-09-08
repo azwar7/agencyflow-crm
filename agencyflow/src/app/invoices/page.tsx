@@ -82,6 +82,12 @@ export default function InvoicesPage() {
 
   useEffect(() => {
     fetchInvoices();
+
+    const handleRefresh = () => {
+      fetchInvoices();
+    };
+    window.addEventListener('agencyflow-refresh', handleRefresh);
+    return () => window.removeEventListener('agencyflow-refresh', handleRefresh);
   }, []);
 
   // Create New Invoice

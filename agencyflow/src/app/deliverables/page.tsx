@@ -107,6 +107,12 @@ export default function DeliverablesPage() {
 
   useEffect(() => {
     fetchDeliverables();
+
+    const handleRefresh = () => {
+      fetchDeliverables();
+    };
+    window.addEventListener('agencyflow-refresh', handleRefresh);
+    return () => window.removeEventListener('agencyflow-refresh', handleRefresh);
   }, []);
 
   // Update Deliverable Status

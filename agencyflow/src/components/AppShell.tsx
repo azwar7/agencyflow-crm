@@ -16,12 +16,21 @@ import { GettingStartedWidget } from './GettingStartedWidget';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isSampleData } = useAuth();
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [leadModalTab, setLeadModalTab] = useState<'manual' | 'n8n'>('manual');
   const [isDealModalOpen, setIsDealModalOpen] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [activeRole, setActiveRole] = useState('OWNER');
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+
+  useEffect(() => {
+    if (isSampleData) {
+      setIsBannerDismissed(false);
+    }
+  }, [isSampleData]);
+
+  const showBanner = isSampleData && !isBannerDismissed;
 
   const handleModalSuccess = () => {
     // Dispatch custom event to trigger page refresh on active view
@@ -112,17 +121,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="app-layout">
       <Sidebar />
-      <div className="app-main">
-        <SampleDataBanner />
-        <Header
-          onOpenNewLead={() => {
-            setLeadModalTab('manual');
-            setIsLeadModalOpen(true);
-          }}
-          onOpenNewDeal={() => setIsDealModalOpen(true)}
-          activeRole={activeRole}
-          onRoleChange={setActiveRole}
-        />
+      <div
+        className="app-main"
+        style={{ '--app-header-height': showBanner ? '104px' : '64px' } as React.CSSProperties}
+      >
+        <div className="app-top-nav">
+          <SampleDataBanner onDismissChange={setIsBannerDismissed} />
+          <Header
+            onOpenNewLead={() => {
+              setLeadModalTab('manual');
+              setIsLeadModalOpen(true);
+            }}
+            onOpenNewDeal={() => setIsDealModalOpen(true)}
+            activeRole={activeRole}
+            onRoleChange={setActiveRole}
+          />
+        </div>
         <main className="page-container">{children}</main>
       </div>
 

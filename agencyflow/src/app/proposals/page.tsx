@@ -143,6 +143,12 @@ export default function ProposalsPage() {
 
   useEffect(() => {
     fetchProposals();
+
+    const handleRefresh = () => {
+      fetchProposals();
+    };
+    window.addEventListener('agencyflow-refresh', handleRefresh);
+    return () => window.removeEventListener('agencyflow-refresh', handleRefresh);
   }, []);
 
   // Sync editing fields whenever a proposal is selected or edit mode toggled

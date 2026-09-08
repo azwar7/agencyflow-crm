@@ -276,16 +276,25 @@ button {
   box-sizing: border-box;
 }
 
-.app-header {
+.app-top-nav {
   position: fixed;
   top: 0;
   left: 260px;
   right: 0;
-  height: 64px;
-  background: rgba(15, 19, 29, 0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(70, 69, 84, 0.15);
   z-index: 40;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: rgba(15, 19, 29, 0.95);
+  backdrop-filter: blur(16px);
+}
+
+.app-header {
+  position: relative;
+  width: 100%;
+  height: 64px;
+  background: transparent;
+  border-bottom: 1px solid rgba(70, 69, 84, 0.15);
   padding: 0 var(--spacing-margin-x);
   display: flex;
   align-items: center;
@@ -294,7 +303,7 @@ button {
 }
 
 .page-content {
-  padding-top: 64px;
+  padding-top: var(--app-header-height, 64px);
   padding-left: var(--spacing-margin-x);
   padding-right: var(--spacing-margin-x);
   padding-bottom: var(--spacing-stack-lg);
@@ -304,6 +313,7 @@ button {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  transition: padding-top 0.2s ease;
 }
 
 /* -------------------------------------------------------------
@@ -627,13 +637,21 @@ button {
   .app-sidebar .sidebar-label {
     display: none;
   }
-  .app-main, .app-header {
-    left: 80px;
+  .app-main {
     padding-left: 80px;
+  }
+  .app-top-nav {
+    left: 80px;
   }
 }
 
 @media (max-width: 768px) {
+  .app-main {
+    padding-left: 0;
+  }
+  .app-top-nav {
+    left: 0;
+  }
   .kpi-grid, .kanban-row {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }

@@ -114,6 +114,12 @@ export default function ProjectsOverviewPage() {
 
   useEffect(() => {
     fetchProjects();
+
+    const handleRefresh = () => {
+      fetchProjects();
+    };
+    window.addEventListener('agencyflow-refresh', handleRefresh);
+    return () => window.removeEventListener('agencyflow-refresh', handleRefresh);
   }, []);
 
   // Run AI Project Health & Risk Diagnostic

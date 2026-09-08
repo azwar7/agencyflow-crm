@@ -30,8 +30,14 @@ export function EmptyState({
 
   const handleLoadSample = async () => {
     setLoadingSample(true);
-    await loadSampleData();
+    const success = await loadSampleData();
     setLoadingSample(false);
+    if (success) {
+      window.dispatchEvent(new Event('agencyflow-refresh'));
+      if (onAction) {
+        onAction();
+      }
+    }
   };
 
   return (

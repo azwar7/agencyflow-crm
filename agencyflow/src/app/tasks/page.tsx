@@ -130,6 +130,12 @@ export default function TasksPage() {
 
   useEffect(() => {
     fetchTasks();
+
+    const handleRefresh = () => {
+      fetchTasks();
+    };
+    window.addEventListener('agencyflow-refresh', handleRefresh);
+    return () => window.removeEventListener('agencyflow-refresh', handleRefresh);
   }, []);
 
   // ----------------------------------------------------
