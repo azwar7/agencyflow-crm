@@ -55,69 +55,71 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
       containerEl.innerHTML = '';
       containerEl.appendChild(renderer.domElement);
 
-      // Lighting System
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+      // Enhanced High-Contrast SaaS Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
       scene.add(ambientLight);
 
-      const dirLight1 = new THREE.DirectionalLight(0xa78bfa, 2.5);
+      const dirLight1 = new THREE.DirectionalLight(0xa78bfa, 3.2); // Vibrant Lavender
       dirLight1.position.set(5, 8, 5);
       scene.add(dirLight1);
 
-      const dirLight2 = new THREE.DirectionalLight(0x2dd4bf, 2.0);
+      const dirLight2 = new THREE.DirectionalLight(0x2dd4bf, 2.6); // Vivid Teal
       dirLight2.position.set(-5, -4, 3);
       scene.add(dirLight2);
 
-      const pointLight = new THREE.PointLight(0xc084fc, 3.2, 14);
-      pointLight.position.set(0, 0, 2);
+      const pointLight = new THREE.PointLight(0xc084fc, 4.0, 16); // Central crystal backlight
+      pointLight.position.set(0, 0, 1.8);
       scene.add(pointLight);
 
       // Group hierarchy for mouse tracking & continuous spin
       const mainGroup = new THREE.Group();
       scene.add(mainGroup);
 
-      // Central Deal Flow Core (Translucent faceted crystal)
-      const coreGeo = new THREE.IcosahedronGeometry(1.55, 1);
+      // Central Deal Flow Core (Deep indigo translucent faceted crystal)
+      const coreGeo = new THREE.IcosahedronGeometry(1.6, 1);
       const coreMat = new THREE.MeshPhongMaterial({
-        color: 0x6366f1,
-        emissive: 0x312e81,
+        color: 0x4f46e5,
+        emissive: 0x1e1b4b,
+        emissiveIntensity: 0.6,
         specular: 0x93c5fd,
-        shininess: 90,
+        shininess: 120,
         wireframe: false,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.88,
         flatShading: true,
       });
       const coreMesh = new THREE.Mesh(coreGeo, coreMat);
       mainGroup.add(coreMesh);
 
-      // Inner Glowing Jewel
-      const innerGeo = new THREE.OctahedronGeometry(0.85, 0);
+      // Inner Glowing Jewel (Vivid Cyan Gem)
+      const innerGeo = new THREE.OctahedronGeometry(0.88, 0);
       const innerMat = new THREE.MeshPhongMaterial({
         color: 0x2dd4bf,
-        emissive: 0x0f766e,
+        emissive: 0x0d9488,
+        emissiveIntensity: 0.9,
         specular: 0xffffff,
-        shininess: 100,
+        shininess: 120,
         transparent: true,
         opacity: 0.95,
       });
       const innerMesh = new THREE.Mesh(innerGeo, innerMat);
       mainGroup.add(innerMesh);
 
-      // Orbiting pipeline rings representing stages
+      // Orbiting pipeline rings with laser glow
       const ringData = [
-        { radius: 2.5, tube: 0.024, color: 0xa855f7, tiltX: 0.6, tiltY: 0.2 },
-        { radius: 3.1, tube: 0.02, color: 0x2dd4bf, tiltX: -0.4, tiltY: 0.8 },
-        { radius: 3.7, tube: 0.016, color: 0x818cf8, tiltX: 0.8, tiltY: -0.5 },
+        { radius: 2.5, tube: 0.026, color: 0xa855f7, tiltX: 0.6, tiltY: 0.2 },
+        { radius: 3.1, tube: 0.022, color: 0x2dd4bf, tiltX: -0.4, tiltY: 0.8 },
+        { radius: 3.7, tube: 0.018, color: 0x818cf8, tiltX: 0.8, tiltY: -0.5 },
       ];
 
       ringData.forEach((data) => {
-        const torusGeo = new THREE.TorusGeometry(data.radius, data.tube, 16, 90);
+        const torusGeo = new THREE.TorusGeometry(data.radius, data.tube, 16, 100);
         const torusMat = new THREE.MeshPhongMaterial({
           color: data.color,
           emissive: data.color,
-          emissiveIntensity: 0.65,
+          emissiveIntensity: 1.1,
           transparent: true,
-          opacity: 0.75,
+          opacity: 0.85,
         });
         const ring = new THREE.Mesh(torusGeo, torusMat);
         ring.rotation.x = data.tiltX;
@@ -130,12 +132,12 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
       const stageColors = [0x2dd4bf, 0xa855f7, 0x60a5fa, 0x34d399, 0xf472b6];
 
       for (let i = 0; i < 5; i++) {
-        const nodeGeo = new THREE.SphereGeometry(0.18, 24, 24);
+        const nodeGeo = new THREE.SphereGeometry(0.22, 24, 24);
         const nodeMat = new THREE.MeshPhongMaterial({
           color: stageColors[i],
           emissive: stageColors[i],
-          emissiveIntensity: 0.85,
-          shininess: 100,
+          emissiveIntensity: 1.15,
+          shininess: 120,
         });
         const node = new THREE.Mesh(nodeGeo, nodeMat);
         node.userData = {
@@ -235,7 +237,7 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
           node.position.z = Math.sin(a) * r;
           node.position.y = Math.sin(a * 2 + elapsedTime) * 0.32 + node.userData.orbitY;
 
-          // Track 2D Screen Projection for HTML badge
+          // Track 2D Screen Projection for HTML badge with radial outward offset
           const badgeEl = badgeRefs.current[idx];
           if (badgeEl) {
             node.getWorldPosition(tempVec);
@@ -244,11 +246,20 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
             const screenX = (tempVec.x * 0.5 + 0.5) * currentWidth;
             const screenY = (-(tempVec.y * 0.5) + 0.5) * currentHeight;
 
+            // Offset radially outward from center so the central crystal is never blocked
+            const centerX = currentWidth / 2;
+            const centerY = currentHeight / 2;
+            const dirX = screenX - centerX;
+            const dirY = screenY - centerY;
+            const dist = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
+            const badgeX = screenX + (dirX / dist) * 32;
+            const badgeY = screenY + (dirY / dist) * 26;
+
             // Distance depth fade (front vs back)
-            const isFront = node.position.z > -0.3;
-            badgeEl.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) translate(-50%, -50%)`;
-            badgeEl.style.opacity = isFront ? '1' : '0.42';
-            badgeEl.style.zIndex = isFront ? '20' : '4';
+            const isFront = node.position.z > -0.25;
+            badgeEl.style.transform = `translate3d(${badgeX}px, ${badgeY}px, 0) translate(-50%, -50%)`;
+            badgeEl.style.opacity = isFront ? '1' : '0.38';
+            badgeEl.style.zIndex = isFront ? '25' : '3';
           }
         });
 
