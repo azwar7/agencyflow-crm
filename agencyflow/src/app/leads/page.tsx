@@ -427,8 +427,8 @@ export default function LeadsPage() {
         tasks: sendJson.data.reminderTask
           ? [sendJson.data.reminderTask, ...(prev?.tasks || [])]
           : (prev?.tasks || []).map((t: any) =>
-              wasFollowUp && t.status === 'PENDING' ? { ...t, status: 'COMPLETED' } : t
-            ),
+            wasFollowUp && t.status === 'PENDING' ? { ...t, status: 'COMPLETED' } : t
+          ),
       }));
       setFeedbackMsg({
         type: 'success',
@@ -723,7 +723,7 @@ export default function LeadsPage() {
               }}
             >
               <option value="">Filter by Source</option>
-              <option value="n8n">n8n Lead Gen</option>
+              <option value="n8n">AI Lead Gen</option>
               <option value="Website Inbound">Website Inbound</option>
               <option value="LinkedIn Outbound">LinkedIn Outbound</option>
               <option value="Executive Referral">Executive Referral</option>
@@ -810,7 +810,7 @@ export default function LeadsPage() {
                 title="Find Leads with AI automation"
               >
                 <Sparkles size={16} color="#6ffbbe" />
-                ⚡ Find Leads with AI
+                Find Leads with AI
               </button>
             )}
 
@@ -924,7 +924,7 @@ export default function LeadsPage() {
                                   </p>
                                 </div>
                               </div>
-                              
+
                               {/* 3-Dot Options Menu */}
                               <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
                                 <button
@@ -1065,20 +1065,22 @@ export default function LeadsPage() {
                                 <Sparkles size={11} /> AI {l.leadScore}
                               </span>
 
-                              {/* Source Badge */}
-                              <span
-                                style={{
-                                  padding: '0.15rem 0.4rem',
-                                  borderRadius: 'var(--radius-sm)',
-                                  background: 'var(--surface-container-high)',
-                                  border: '1px solid rgba(255, 255, 255, 0.05)',
-                                  color: 'var(--on-surface-variant)',
-                                  fontSize: '10px',
-                                  fontWeight: 500,
-                                }}
-                              >
-                                {l.source || 'Inbound'}
-                              </span>
+                              {/* Source Badge (hide n8n workflow tag from cards) */}
+                              {l.source && l.source.trim().toLowerCase() !== 'n8n' && (
+                                <span
+                                  style={{
+                                    padding: '0.15rem 0.4rem',
+                                    borderRadius: 'var(--radius-sm)',
+                                    background: 'var(--surface-container-high)',
+                                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                                    color: 'var(--on-surface-variant)',
+                                    fontSize: '10px',
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {l.source}
+                                </span>
+                              )}
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.4rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
@@ -1382,14 +1384,14 @@ export default function LeadsPage() {
                               analysisData.qualification === 'hot'
                                 ? 'rgba(255, 107, 107, 0.2)'
                                 : analysisData.qualification === 'warm'
-                                ? 'rgba(255, 185, 95, 0.2)'
-                                : 'rgba(148, 163, 184, 0.2)',
+                                  ? 'rgba(255, 185, 95, 0.2)'
+                                  : 'rgba(148, 163, 184, 0.2)',
                             color:
                               analysisData.qualification === 'hot'
                                 ? '#ff6b6b'
                                 : analysisData.qualification === 'warm'
-                                ? '#ffb95f'
-                                : '#94a3b8',
+                                  ? '#ffb95f'
+                                  : '#94a3b8',
                             border: '1px solid currentColor',
                           }}
                         >
@@ -1577,10 +1579,10 @@ export default function LeadsPage() {
                       {generatingEmail
                         ? 'Drafting AI Copy...'
                         : isComposingFollowUp
-                        ? 'Regenerate Reminder'
-                        : emailBody
-                        ? 'Regenerate Copy'
-                        : 'Generate Email'}
+                          ? 'Regenerate Reminder'
+                          : emailBody
+                            ? 'Regenerate Copy'
+                            : 'Generate Email'}
                     </button>
                   </div>
 
@@ -1646,8 +1648,8 @@ export default function LeadsPage() {
                                       background: isOverdue
                                         ? 'rgba(239, 68, 68, 0.2)'
                                         : isDueToday
-                                        ? 'rgba(251, 191, 36, 0.25)'
-                                        : 'rgba(56, 189, 248, 0.2)',
+                                          ? 'rgba(251, 191, 36, 0.25)'
+                                          : 'rgba(56, 189, 248, 0.2)',
                                       color: isOverdue ? '#f87171' : isDueToday ? '#fbbf24' : '#38bdf8',
                                       border: '1px solid currentColor',
                                     }}
@@ -1673,13 +1675,13 @@ export default function LeadsPage() {
                               <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.15rem' }}>
                                 {pendingReminder
                                   ? `Scheduled for ${new Date(pendingReminder.dueDate).toLocaleDateString([], {
-                                      weekday: 'short',
-                                      month: 'short',
-                                      day: 'numeric',
-                                    })} (${Math.max(0, Math.ceil((new Date(pendingReminder.dueDate).getTime() - Date.now()) / (1000 * 3600 * 24)))} days remaining)`
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric',
+                                  })} (${Math.max(0, Math.ceil((new Date(pendingReminder.dueDate).getTime() - Date.now()) / (1000 * 3600 * 24)))} days remaining)`
                                   : completedReminder
-                                  ? `Follow-up reminder completed on ${new Date(completedReminder.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}`
-                                  : 'Auto-reminder scheduled upon email dispatch'}
+                                    ? `Follow-up reminder completed on ${new Date(completedReminder.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}`
+                                    : 'Auto-reminder scheduled upon email dispatch'}
                               </div>
                             </div>
                           </div>
@@ -1771,7 +1773,7 @@ export default function LeadsPage() {
                     <div className="skeleton-pulse" style={{ height: '220px', borderRadius: 'var(--radius-md)' }} />
                   ) : emailBody || emailSubject ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--surface-container-high)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      
+
                       {/* Follow-Up Composer Indicator Banner */}
                       {isComposingFollowUp && (
                         <div
@@ -1978,15 +1980,15 @@ export default function LeadsPage() {
                                 background: !isEmailAvailable(selectedLead.email)
                                   ? '#334155'
                                   : currentOutreach?.status === 'FAILED'
-                                  ? '#f87171'
-                                  : isComposingFollowUp
-                                  ? 'linear-gradient(135deg, #38bdf8, #818cf8)'
-                                  : '#38bdf8',
+                                    ? '#f87171'
+                                    : isComposingFollowUp
+                                      ? 'linear-gradient(135deg, #38bdf8, #818cf8)'
+                                      : '#38bdf8',
                                 color: !isEmailAvailable(selectedLead.email)
                                   ? '#94a3b8'
                                   : currentOutreach?.status === 'FAILED'
-                                  ? '#450a0a'
-                                  : '#082f49',
+                                    ? '#450a0a'
+                                    : '#082f49',
                                 border: 'none',
                                 fontSize: '0.85rem',
                                 fontWeight: 700,
@@ -1997,10 +1999,10 @@ export default function LeadsPage() {
                                 boxShadow: !isEmailAvailable(selectedLead.email)
                                   ? 'none'
                                   : currentOutreach?.status === 'FAILED'
-                                  ? '0 0 20px rgba(248, 113, 113, 0.3)'
-                                  : isComposingFollowUp
-                                  ? '0 0 22px rgba(56, 189, 248, 0.4)'
-                                  : '0 0 20px rgba(56, 189, 248, 0.3)',
+                                    ? '0 0 20px rgba(248, 113, 113, 0.3)'
+                                    : isComposingFollowUp
+                                      ? '0 0 22px rgba(56, 189, 248, 0.4)'
+                                      : '0 0 20px rgba(56, 189, 248, 0.3)',
                               }}
                             >
                               {sendingEmail ? (
@@ -2011,12 +2013,12 @@ export default function LeadsPage() {
                               {sendingEmail
                                 ? 'Dispatching email...'
                                 : !isEmailAvailable(selectedLead.email)
-                                ? 'Email Not Available'
-                                : currentOutreach?.status === 'FAILED'
-                                ? 'Retry Send 🚀'
-                                : isComposingFollowUp
-                                ? 'Send Reminder 🚀'
-                                : 'Approve & Send 🚀'}
+                                  ? 'Email Not Available'
+                                  : currentOutreach?.status === 'FAILED'
+                                    ? 'Retry Send 🚀'
+                                    : isComposingFollowUp
+                                      ? 'Send Reminder 🚀'
+                                      : 'Approve & Send 🚀'}
                             </button>
                           )}
                         </div>
@@ -2072,18 +2074,18 @@ export default function LeadsPage() {
                                     item.status === 'SENT'
                                       ? 'rgba(78, 222, 163, 0.15)'
                                       : item.status === 'APPROVED'
-                                      ? 'rgba(56, 189, 248, 0.15)'
-                                      : item.status === 'FAILED'
-                                      ? 'rgba(255, 180, 171, 0.15)'
-                                      : 'rgba(208, 188, 255, 0.15)',
+                                        ? 'rgba(56, 189, 248, 0.15)'
+                                        : item.status === 'FAILED'
+                                          ? 'rgba(255, 180, 171, 0.15)'
+                                          : 'rgba(208, 188, 255, 0.15)',
                                   color:
                                     item.status === 'SENT'
                                       ? '#4edea3'
                                       : item.status === 'APPROVED'
-                                      ? '#38bdf8'
-                                      : item.status === 'FAILED'
-                                      ? '#ffb4ab'
-                                      : '#d0bcff',
+                                        ? '#38bdf8'
+                                        : item.status === 'FAILED'
+                                          ? '#ffb4ab'
+                                          : '#d0bcff',
                                 }}
                               >
                                 {item.status}

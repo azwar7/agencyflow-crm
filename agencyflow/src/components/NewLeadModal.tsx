@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Sparkles, CheckCircle2, Bot, Search, MapPin, Globe, Loader2, ArrowRight } from 'lucide-react';
+import { X, UserPlus, Sparkles, CheckCircle2, Bot, Search, MapPin, Loader2, ArrowRight } from 'lucide-react';
 import { useLeadFinder } from '@/context/LeadFinderContext';
 
 interface NewLeadModalProps {
@@ -29,7 +29,6 @@ export function NewLeadModal({ isOpen, onClose, onSuccess, initialTab = 'manual'
   const [finderData, setFinderData] = useState({
     query: 'Gyms & Fitness Centers',
     location: 'Peshawar, Pakistan',
-    webhookUrl: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -167,8 +166,7 @@ export function NewLeadModal({ isOpen, onClose, onSuccess, initialTab = 'manual'
     try {
       const res = await startJob(
         finderData.query,
-        finderData.location,
-        finderData.webhookUrl || undefined
+        finderData.location
       );
 
       if (!res.success) {
@@ -331,7 +329,7 @@ export function NewLeadModal({ isOpen, onClose, onSuccess, initialTab = 'manual'
               transition: 'all 0.15s ease',
             }}
           >
-            <Sparkles size={16} /> ⚡ Find Leads with AI
+            <Sparkles size={16} /> Find Leads with AI
           </button>
         </div>
 
@@ -729,32 +727,6 @@ export function NewLeadModal({ isOpen, onClose, onSuccess, initialTab = 'manual'
               />
             </div>
 
-            {/* Optional Custom Webhook URL */}
-            <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--on-surface-variant)' }}>
-                <Globe size={14} /> n8n Webhook URL (Optional override)
-              </label>
-              <input
-                type="url"
-                value={finderData.webhookUrl}
-                onChange={(e) => setFinderData({ ...finderData, webhookUrl: e.target.value })}
-                placeholder="https://your-n8n.app.n8n.cloud/webhook/find-leads"
-                style={{
-                  width: '100%',
-                  padding: '0.6rem 0.8rem',
-                  background: 'var(--surface-container-high)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 'var(--radius-md)',
-                  color: 'var(--on-surface)',
-                  fontSize: '0.8rem',
-                  outline: 'none',
-                }}
-              />
-              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', marginTop: '0.25rem', display: 'block' }}>
-                Defaults to <code style={{ color: 'var(--primary)' }}>N8N_WEBHOOK_URL</code> in your CRM settings.
-              </span>
-            </div>
-
             {/* Action Buttons */}
             <div
               style={{
@@ -792,7 +764,7 @@ export function NewLeadModal({ isOpen, onClose, onSuccess, initialTab = 'manual'
                   </>
                 ) : isJobRunning ? (
                   <>
-                    <Loader2 size={16} className="spin" color="#38bdf8" /> ⚡ Workflow Already Running...
+                    <Loader2 size={16} className="spin" color="#38bdf8" /> Workflow Already Running...
                   </>
                 ) : (
                   <>
