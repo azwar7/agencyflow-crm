@@ -915,8 +915,8 @@ html[data-high-contrast="true"] * {
 .hero-pipeline-container {
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto 40px auto;
-  padding: 10px 16px 20px 16px;
+  margin: 0 auto 20px auto;
+  padding: 0 16px 12px 16px;
   text-align: left;
   position: relative;
   z-index: 10;
@@ -925,8 +925,8 @@ html[data-high-contrast="true"] * {
 
 .hero-pipeline-grid {
   display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  gap: 48px;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 24px;
   align-items: center;
 }
 
@@ -937,16 +937,16 @@ html[data-high-contrast="true"] * {
   line-height: 1.12;
   letter-spacing: -0.025em;
   color: #f1f1f6;
-  margin: 0 0 18px 0;
-  max-width: 520px;
+  margin: 0 0 14px 0;
+  max-width: 540px;
 }
 
 .hero-pipeline-text p {
   color: #9da0b5;
   font-size: 15.5px;
-  max-width: 460px;
-  margin: 0 0 28px 0;
-  line-height: 1.65;
+  max-width: 490px;
+  margin: 0 0 22px 0;
+  line-height: 1.55;
 }
 
 .hero-pipeline-actions {
@@ -1095,8 +1095,8 @@ html[data-high-contrast="true"] * {
 
 .hero-pipeline-readout {
   max-width: 1040px;
-  margin: 32px auto 0 auto;
-  padding-top: 24px;
+  margin: 20px auto 0 auto;
+  padding-top: 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: grid;
   grid-template-columns: repeat(4, 1fr);

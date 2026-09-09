@@ -85,7 +85,7 @@ export default function LandingPage() {
       >
         <div
           style={{
-            height: '80px',
+            height: '68px',
             width: '100%',
             padding: '0 40px',
             display: 'grid',
@@ -392,12 +392,12 @@ export default function LandingPage() {
       </header>
 
       {/* 2. Hero Section (Noticeably Reduced Top Gap) */}
-      <main style={{ paddingTop: '80px', width: '100%', background: '#111318' }}>
+      <main style={{ paddingTop: '68px', width: '100%', background: '#111318' }}>
         <section
           style={{
             position: 'relative',
-            paddingTop: '40px',
-            paddingBottom: '120px',
+            paddingTop: '16px',
+            paddingBottom: '90px',
             paddingLeft: '24px',
             paddingRight: '24px',
             display: 'flex',

@@ -320,7 +320,7 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
               fontWeight: 700,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              marginBottom: '16px',
+              marginBottom: '12px',
             }}
           >
             <Sparkles size={13} />
@@ -353,7 +353,7 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
           style={{
             position: 'relative',
             width: '100%',
-            height: '470px',
+            height: '420px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
