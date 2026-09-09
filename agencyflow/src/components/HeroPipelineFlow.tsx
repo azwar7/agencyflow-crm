@@ -143,7 +143,7 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
         node.userData = {
           angle: (i / 5) * Math.PI * 2,
           radius: 2.75 + (i % 2) * 0.7,
-          speed: 0.012 + i * 0.0025,
+          speed: 0.0055 + i * 0.0011,
           orbitY: (i - 2) * 0.38,
         };
         mainGroup.add(node);
@@ -212,17 +212,17 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
         mouseX += (targetX - mouseX) * 0.05;
         mouseY += (targetY - mouseY) * 0.05;
 
-        mainGroup.rotation.y = elapsedTime * 0.32 + mouseX * 0.75;
-        mainGroup.rotation.x = Math.sin(elapsedTime * 0.22) * 0.12 + mouseY * 0.45;
+        mainGroup.rotation.y = elapsedTime * 0.15 + mouseX * 0.75;
+        mainGroup.rotation.x = Math.sin(elapsedTime * 0.18) * 0.10 + mouseY * 0.45;
 
-        coreMesh.rotation.y = elapsedTime * 0.4;
-        coreMesh.rotation.z = Math.sin(elapsedTime * 0.45) * 0.18;
+        coreMesh.rotation.y = elapsedTime * 0.22;
+        coreMesh.rotation.z = Math.sin(elapsedTime * 0.3) * 0.15;
 
-        innerMesh.rotation.y = -elapsedTime * 0.65;
-        innerMesh.rotation.x = elapsedTime * 0.45;
+        innerMesh.rotation.y = -elapsedTime * 0.35;
+        innerMesh.rotation.x = elapsedTime * 0.25;
 
         // Pulsing breathing scale
-        const scale = 1 + Math.sin(elapsedTime * 1.6) * 0.045;
+        const scale = 1 + Math.sin(elapsedTime * 1.2) * 0.04;
         innerMesh.scale.set(scale, scale, scale);
 
         // Orbiting stage nodes & Projected 3D Billboard Badges
@@ -235,7 +235,7 @@ export default function HeroPipelineFlow({ isAuthenticated = false }: HeroPipeli
           const r = node.userData.radius;
           node.position.x = Math.cos(a) * r;
           node.position.z = Math.sin(a) * r;
-          node.position.y = Math.sin(a * 2 + elapsedTime) * 0.32 + node.userData.orbitY;
+          node.position.y = Math.sin(a * 2 + elapsedTime * 0.7) * 0.25 + node.userData.orbitY;
 
           // Track 2D Screen Projection for HTML badge with radial outward offset
           const badgeEl = badgeRefs.current[idx];
