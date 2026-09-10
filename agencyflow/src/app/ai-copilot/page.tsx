@@ -815,7 +815,7 @@ You can ask me questions, request complete data tables (e.g. *"all the leads tha
             })}
 
             {loading && (
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', width: '100%' }}>
                 <div
                   style={{
                     width: '30px',
@@ -826,25 +826,45 @@ You can ask me questions, request complete data tables (e.g. *"all the leads tha
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#fff',
+                    flexShrink: 0,
+                    marginTop: '2px',
+                    boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)',
                   }}
                 >
                   <Bot size={16} />
                 </div>
                 <div
                   style={{
-                    background: 'var(--surface-container)',
-                    padding: '0.85rem 1.25rem',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    maxWidth: '85%',
+                    width: '100%',
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                    color: 'var(--on-surface-variant)',
-                    fontSize: '0.85rem',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
                   }}
                 >
-                  <RefreshCw size={15} className="animate-spin" color="#38bdf8" />
-                  Querying live CRM records & generating complete analysis...
+                  <div
+                    className="skeleton-pulse"
+                    style={{
+                      background: 'var(--surface-container)',
+                      padding: '1.1rem 1.35rem',
+                      borderRadius: '16px 16px 16px 2px',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem',
+                      width: '100%',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <div className="skeleton-bone" style={{ width: '45%', height: '14px' }} />
+                    <div className="skeleton-bone" style={{ width: '92%', height: '11px' }} />
+                    <div className="skeleton-bone" style={{ width: '80%', height: '11px' }} />
+                    <div className="skeleton-bone" style={{ width: '65%', height: '11px' }} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.75rem', color: '#38bdf8', paddingLeft: '4px' }}>
+                    <RefreshCw size={12} className="animate-spin" />
+                    <span>Querying live CRM records & synthesizing response...</span>
+                  </div>
                 </div>
               </div>
             )}

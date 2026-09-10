@@ -445,8 +445,34 @@ export default function ClientsOverviewPage() {
           }}
         >
           {loading ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--on-surface-variant)' }}>
-              Loading agency client accounts...
+            <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="skeleton-pulse"
+                  style={{
+                    height: '58px',
+                    borderRadius: '0.65rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 1.25rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div className="skeleton-bone" style={{ width: '36px', height: '36px', borderRadius: '50%' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div className="skeleton-bone" style={{ width: '130px', height: '14px' }} />
+                      <div className="skeleton-bone" style={{ width: '80px', height: '10px' }} />
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                    <div className="skeleton-bone" style={{ width: '75px', height: '22px', borderRadius: '9999px' }} />
+                    <div className="skeleton-bone" style={{ width: '90px', height: '16px' }} />
+                    <div className="skeleton-bone" style={{ width: '28px', height: '28px', borderRadius: '6px' }} />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredClients.length === 0 ? (
             <div style={{ padding: '2rem' }}>

@@ -169,113 +169,138 @@ export default function DashboardPage() {
         </div>
 
         {/* 2. Real KPI Summary Cards (Level 2 Floating Glassmorphism Interaction) */}
-        <div className="kpi-grid">
-          {/* Card 1: Pipeline Value */}
-          <div
-            className="kpi-card hover-level-2-spacious"
-            onClick={() => router.push('/pipeline')}
-            style={{ cursor: 'pointer' }}
-            title="View Pipeline"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                PIPELINE VALUE
-              </span>
-              <div style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
-                {metrics.activeDealsCount} Deals
+        {loading ? (
+          <div className="kpi-grid">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="kpi-card skeleton-pulse"
+                style={{
+                  height: '95px',
+                  borderRadius: 'var(--radius-lg)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  padding: '1.1rem 1.25rem',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="skeleton-bone" style={{ width: '75px', height: '11px' }} />
+                  <div className="skeleton-bone" style={{ width: '36px', height: '16px', borderRadius: '4px' }} />
+                </div>
+                <div className="skeleton-bone" style={{ width: '110px', height: '26px', borderRadius: '4px' }} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="kpi-grid">
+            {/* Card 1: Pipeline Value */}
+            <div
+              className="kpi-card hover-level-2-spacious"
+              onClick={() => router.push('/pipeline')}
+              style={{ cursor: 'pointer' }}
+              title="View Pipeline"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  PIPELINE VALUE
+                </span>
+                <div style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                  {metrics.activeDealsCount} Deals
+                </div>
+              </div>
+              <div className="kpi-metric">${Number(metrics.totalPipelineValue || 0).toLocaleString()}</div>
+            </div>
+
+            {/* Card 2: Active Projects */}
+            <div
+              className="kpi-card hover-level-2-spacious"
+              onClick={() => router.push('/projects')}
+              style={{ cursor: 'pointer' }}
+              title="View Projects"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  ACTIVE PROJECTS
+                </span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
+                  account_tree
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <span className="kpi-metric" style={{ marginTop: 0 }}>
+                  {metrics.activeProjectsCount}
+                </span>
+                <span style={{ fontSize: '12px', color: metrics.projectsDueThisWeek > 0 ? '#ffb95f' : 'var(--on-surface-variant)' }}>
+                  {metrics.projectsDueThisWeek > 0 ? `${metrics.projectsDueThisWeek} due this week` : 'on schedule'}
+                </span>
               </div>
             </div>
-            <div className="kpi-metric">${Number(metrics.totalPipelineValue || 0).toLocaleString()}</div>
-          </div>
 
-          {/* Card 2: Active Projects */}
-          <div
-            className="kpi-card hover-level-2-spacious"
-            onClick={() => router.push('/projects')}
-            style={{ cursor: 'pointer' }}
-            title="View Projects"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                ACTIVE PROJECTS
-              </span>
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
-                account_tree
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.5rem' }}>
-              <span className="kpi-metric" style={{ marginTop: 0 }}>
-                {metrics.activeProjectsCount}
-              </span>
-              <span style={{ fontSize: '12px', color: metrics.projectsDueThisWeek > 0 ? '#ffb95f' : 'var(--on-surface-variant)' }}>
-                {metrics.projectsDueThisWeek > 0 ? `${metrics.projectsDueThisWeek} due this week` : 'on schedule'}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 3: Outstanding Invoices */}
-          <div
-            className="kpi-card hover-level-2-spacious"
-            onClick={() => router.push('/invoices')}
-            style={{ cursor: 'pointer' }}
-            title="View Invoices"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                OUTSTANDING
-              </span>
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
-                receipt_long
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.5rem' }}>
-              <span className="kpi-metric" style={{ marginTop: 0, color: metrics.outstandingInvoicesAmount > 0 ? '#ffb4ab' : '#fff' }}>
-                ${Number(metrics.outstandingInvoicesAmount || 0).toLocaleString()}
-              </span>
-              <span style={{ fontSize: '12px', color: metrics.awaitingInvoicesCount > 0 ? '#ffb4ab' : 'var(--on-surface-variant)' }}>
-                {metrics.awaitingInvoicesCount} awaiting
-              </span>
-            </div>
-          </div>
-
-          {/* Card 4: Monthly Revenue */}
-          <div
-            className="kpi-card hover-level-2-spacious"
-            onClick={() => router.push('/invoices')}
-            style={{ cursor: 'pointer' }}
-            title="View Billing"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                COLLECTED REV
-              </span>
-              <div style={{ background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
-                Paid
+            {/* Card 3: Outstanding Invoices */}
+            <div
+              className="kpi-card hover-level-2-spacious"
+              onClick={() => router.push('/invoices')}
+              style={{ cursor: 'pointer' }}
+              title="View Invoices"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  OUTSTANDING
+                </span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
+                  receipt_long
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <span className="kpi-metric" style={{ marginTop: 0, color: metrics.outstandingInvoicesAmount > 0 ? '#ffb4ab' : '#fff' }}>
+                  ${Number(metrics.outstandingInvoicesAmount || 0).toLocaleString()}
+                </span>
+                <span style={{ fontSize: '12px', color: metrics.awaitingInvoicesCount > 0 ? '#ffb4ab' : 'var(--on-surface-variant)' }}>
+                  {metrics.awaitingInvoicesCount} awaiting
+                </span>
               </div>
             </div>
-            <div className="kpi-metric" style={{ color: '#4edea3' }}>
-              ${Number(metrics.monthlyRevenue || 0).toLocaleString()}
-            </div>
-          </div>
 
-          {/* Card 5: Conversion Win Rate */}
-          <div
-            className="kpi-card hover-level-2-spacious"
-            onClick={() => router.push('/pipeline')}
-            style={{ cursor: 'pointer' }}
-            title="View Conversion"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                WIN RATE
-              </span>
-              <div style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
-                {metrics.closedWonCount} Won
+            {/* Card 4: Monthly Revenue */}
+            <div
+              className="kpi-card hover-level-2-spacious"
+              onClick={() => router.push('/invoices')}
+              style={{ cursor: 'pointer' }}
+              title="View Billing"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  COLLECTED REV
+                </span>
+                <div style={{ background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                  Paid
+                </div>
+              </div>
+              <div className="kpi-metric" style={{ color: '#4edea3' }}>
+                ${Number(metrics.monthlyRevenue || 0).toLocaleString()}
               </div>
             </div>
-            <div className="kpi-metric">{metrics.winRate}%</div>
+
+            {/* Card 5: Conversion Win Rate */}
+            <div
+              className="kpi-card hover-level-2-spacious"
+              onClick={() => router.push('/pipeline')}
+              style={{ cursor: 'pointer' }}
+              title="View Conversion"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  WIN RATE
+                </span>
+                <div style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                  {metrics.closedWonCount} Won
+                </div>
+              </div>
+              <div className="kpi-metric">{metrics.winRate}%</div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 3. Real Active Pipeline Overview */}
         <div>
@@ -291,7 +316,31 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="kanban-row" style={{ minHeight: '140px' }}>
+          {loading ? (
+            <div className="kanban-row" style={{ minHeight: '140px' }}>
+              {[1, 2, 3, 4].map((col) => (
+                <div
+                  key={col}
+                  className="kanban-col skeleton-pulse"
+                  style={{
+                    height: '140px',
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '1rem',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="skeleton-bone" style={{ width: '70px', height: '12px' }} />
+                    <div className="skeleton-bone" style={{ width: '24px', height: '14px', borderRadius: '9999px' }} />
+                  </div>
+                  <div className="skeleton-bone" style={{ width: '100%', height: '55px', borderRadius: '8px' }} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="kanban-row" style={{ minHeight: '140px' }}>
             {/* Col 1: New Leads (Level 3 Subtle Container Interaction) */}
             <div className="kanban-col hover-level-3">
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
@@ -445,9 +494,37 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
+          )}
         </div>
 
         {/* 4. Middle Grid: Urgent Tasks & Real Recent Projects */}
+        {loading ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
+            <div className="glass-card skeleton-pulse" style={{ height: '260px', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="skeleton-bone" style={{ width: '130px', height: '16px' }} />
+                <div className="skeleton-bone" style={{ width: '90px', height: '12px' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="skeleton-bone" style={{ height: '42px', borderRadius: '8px' }} />
+                ))}
+              </div>
+            </div>
+
+            <div className="glass-card skeleton-pulse" style={{ height: '260px', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="skeleton-bone" style={{ width: '130px', height: '16px' }} />
+                <div className="skeleton-bone" style={{ width: '90px', height: '12px' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="skeleton-bone" style={{ height: '42px', borderRadius: '8px' }} />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
           {/* Urgent Tasks */}
           <div className="glass-card hover-level-3" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -574,6 +651,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )}
       </div>
     </AppShell>
   );

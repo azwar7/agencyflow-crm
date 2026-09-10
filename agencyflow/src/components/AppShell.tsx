@@ -100,10 +100,91 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f1117' }}>
-        <div style={{ width: '36px', height: '36px', border: '3px solid rgba(192, 193, 255, 0.2)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '1rem' }} />
-        <div style={{ textAlign: 'center', color: 'var(--on-surface-variant)', fontSize: '0.9rem' }}>
-          Loading workspace...
+      <div className="app-layout" style={{ minHeight: '100vh', background: '#0f1117' }}>
+        {/* Skeleton Sidebar */}
+        <aside
+          style={{
+            width: '240px',
+            height: '100vh',
+            borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'var(--surface-container-lowest, #0a0e18)',
+            padding: '20px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
+            boxSizing: 'border-box',
+          }}
+        >
+          {/* Brand Logo Placeholder */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="skeleton-pulse" style={{ width: '32px', height: '32px', borderRadius: '6px' }} />
+            <div className="skeleton-pulse" style={{ width: '100px', height: '18px', borderRadius: '4px' }} />
+          </div>
+
+          {/* Navigation Items Skeletons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="skeleton-pulse"
+                style={{
+                  height: '38px',
+                  borderRadius: '8px',
+                  opacity: 1 - i * 0.08,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* User Profile Footer */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div className="skeleton-pulse" style={{ width: '34px', height: '34px', borderRadius: '50%' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
+              <div className="skeleton-pulse" style={{ width: '80%', height: '12px' }} />
+              <div className="skeleton-pulse" style={{ width: '50%', height: '10px' }} />
+            </div>
+          </div>
+        </aside>
+
+        {/* Skeleton Main View */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          {/* Top Nav Header Skeleton */}
+          <div
+            style={{
+              height: '64px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 28px',
+              background: 'rgba(15, 17, 23, 0.8)',
+            }}
+          >
+            <div className="skeleton-pulse" style={{ width: '280px', height: '36px', borderRadius: '8px' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="skeleton-pulse" style={{ width: '110px', height: '34px', borderRadius: '6px' }} />
+              <div className="skeleton-pulse" style={{ width: '34px', height: '34px', borderRadius: '50%' }} />
+            </div>
+          </div>
+
+          {/* Page Canvas Skeletons */}
+          <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Header Greeting Skeleton */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="skeleton-pulse" style={{ width: '240px', height: '28px', borderRadius: '6px' }} />
+              <div className="skeleton-pulse" style={{ width: '180px', height: '14px', borderRadius: '4px' }} />
+            </div>
+
+            {/* KPI Cards Skeletons */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="skeleton-pulse" style={{ height: '110px', borderRadius: '12px' }} />
+              ))}
+            </div>
+
+            {/* Content Area Skeleton */}
+            <div className="skeleton-pulse" style={{ height: '340px', borderRadius: '14px' }} />
+          </div>
         </div>
       </div>
     );
