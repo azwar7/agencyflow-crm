@@ -1577,13 +1577,13 @@ export default function LandingPage() {
                 The operating system for modern agencies. Streamline your workflow, manage clients, and scale with confidence.
               </p>
               <div style={{ display: 'flex', gap: '16px' }}>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none' }}>
+                <a href="/" title="AgencyFlow Platform" style={{ color: '#cbc3d7', textDecoration: 'none' }}>
                   <span className="material-symbols-outlined">public</span>
                 </a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none' }}>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn Community" style={{ color: '#cbc3d7', textDecoration: 'none' }}>
                   <span className="material-symbols-outlined">share</span>
                 </a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none' }}>
+                <a href="mailto:hello@agencyflow.com" title="Email AgencyFlow Team" style={{ color: '#cbc3d7', textDecoration: 'none' }}>
                   <span className="material-symbols-outlined">alternate_email</span>
                 </a>
               </div>
@@ -1606,9 +1606,9 @@ export default function LandingPage() {
               </h4>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <a href="#about" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>About Us</a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Careers</a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Contact</a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Blog</a>
+                <Link href="/contact?topic=careers" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Careers</Link>
+                <Link href="/contact" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Contact</Link>
+                <Link href="/contact?topic=updates" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Blog & Updates</Link>
               </nav>
             </div>
 
@@ -1617,9 +1617,9 @@ export default function LandingPage() {
                 Legal
               </h4>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Privacy</a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Terms</a>
-                <a href="#" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Security</a>
+                <Link href="/privacy" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Privacy Policy</Link>
+                <Link href="/terms" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Terms of Service</Link>
+                <Link href="/security" style={{ color: '#cbc3d7', textDecoration: 'none', fontSize: '16px' }}>Security Whitepaper</Link>
               </nav>
             </div>
 
@@ -1627,7 +1627,7 @@ export default function LandingPage() {
 
           <div style={{ paddingTop: '32px', borderTop: '1px solid #494454', textAlign: 'center' }}>
             <p style={{ color: '#cbc3d7', fontSize: '12px', fontFamily: "'Geist', sans-serif" }}>
-              © 2024 AgencyFlow Inc. All rights reserved.
+              © {new Date().getFullYear()} AgencyFlow Inc. All rights reserved.
             </p>
           </div>
         </div>
