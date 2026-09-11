@@ -475,64 +475,135 @@ button {
 }
 
 .kpi-card {
-  background: rgba(28, 31, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(144, 143, 160, 0.16);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
+  background: rgba(24, 28, 38, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.15rem 1.25rem;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
   min-width: 0;
   cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kpi-card:hover {
+  border-color: rgba(208, 188, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
 .kpi-metric {
-  font-size: 1.75rem;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 1.85rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--on-surface);
-  line-height: 2rem;
+  line-height: 1.1;
   margin-top: 0.5rem;
 }
 
-/* Buttons */
+/* Unified Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-DEFAULT);
-  font-size: 0.875rem;
-  font-weight: 500;
+  gap: 0.45rem;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: var(--on-primary);
+  background: #d0bcff;
+  color: #1a0050;
   font-weight: 700;
-  box-shadow: 0 0 20px rgba(192, 193, 255, 0.25);
+  border: none;
+  box-shadow: 0 0 20px rgba(208, 188, 255, 0.25);
 }
 
 .btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 4px 20px rgba(192, 193, 255, 0.45);
+  background: #e2d6ff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 28px rgba(208, 188, 255, 0.45);
 }
 
 .btn-secondary {
-  background: var(--surface-container-high);
-  color: var(--on-surface);
-  border: 1px solid rgba(144, 143, 160, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e2e8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .btn-secondary:hover {
-  background: var(--surface-container-highest);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--on-surface-variant);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+/* Standardized Status Badges */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge-pill-cyan {
+  background: rgba(56, 189, 248, 0.14);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.badge-pill-teal {
+  background: rgba(78, 222, 163, 0.14);
+  color: #4edea3;
+  border: 1px solid rgba(78, 222, 163, 0.3);
+}
+
+.badge-pill-purple {
+  background: rgba(208, 188, 255, 0.14);
+  color: #d0bcff;
+  border: 1px solid rgba(208, 188, 255, 0.3);
+}
+
+.badge-pill-amber {
+  background: rgba(255, 185, 95, 0.14);
+  color: #ffb95f;
+  border: 1px solid rgba(255, 185, 95, 0.3);
+}
+
+.badge-pill-coral {
+  background: rgba(255, 180, 171, 0.14);
+  color: #ffb4ab;
+  border: 1px solid rgba(255, 180, 171, 0.3);
 }
 
 /* 5-Column Desktop Grid for Pipeline */

@@ -143,27 +143,20 @@ export default function DashboardPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <button onClick={() => router.push('/projects')} className="btn btn-secondary hover-level-1" style={{ padding: '0.45rem 0.8rem', fontSize: '0.8rem' }}>
+            <button onClick={() => router.push('/projects')} className="btn btn-secondary">
               + New Project
             </button>
 
-            <button onClick={() => router.push('/proposals')} className="btn btn-secondary hover-level-1" style={{ padding: '0.45rem 0.8rem', fontSize: '0.8rem' }}>
+            <button onClick={() => router.push('/proposals')} className="btn btn-secondary">
               Create Proposal
             </button>
 
             <button
               onClick={() => router.push('/leads')}
-              className="btn btn-primary hover-level-1"
-              style={{
-                padding: '0.45rem 0.9rem',
-                fontSize: '0.8rem',
-                background: 'linear-gradient(135deg, #38bdf8, #2563eb)',
-                border: 'none',
-                fontWeight: 700,
-                boxShadow: '0 0 15px rgba(56, 189, 248, 0.25)',
-              }}
+              className="btn btn-primary"
             >
-              + New Lead
+              <span className="material-symbols-outlined" style={{ fontSize: '17px' }}>add</span>
+              New Lead
             </button>
           </div>
         </div>
@@ -177,7 +170,7 @@ export default function DashboardPage() {
                 className="kpi-card skeleton-pulse"
                 style={{
                   height: '95px',
-                  borderRadius: 'var(--radius-lg)',
+                  borderRadius: '12px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -196,86 +189,70 @@ export default function DashboardPage() {
           <div className="kpi-grid">
             {/* Card 1: Pipeline Value */}
             <div
-              className="kpi-card hover-level-2-spacious"
+              className="kpi-card"
               onClick={() => router.push('/pipeline')}
-              style={{ cursor: 'pointer' }}
               title="View Pipeline"
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   PIPELINE VALUE
                 </span>
-                <div style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                <span className="badge-pill badge-pill-cyan">
                   {metrics.activeDealsCount} Deals
-                </div>
+                </span>
               </div>
               <div className="kpi-metric">${Number(metrics.totalPipelineValue || 0).toLocaleString()}</div>
             </div>
 
             {/* Card 2: Active Projects */}
             <div
-              className="kpi-card hover-level-2-spacious"
+              className="kpi-card"
               onClick={() => router.push('/projects')}
-              style={{ cursor: 'pointer' }}
               title="View Projects"
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   ACTIVE PROJECTS
                 </span>
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
-                  account_tree
+                <span className={`badge-pill ${metrics.projectsDueThisWeek > 0 ? 'badge-pill-amber' : 'badge-pill-teal'}`}>
+                  {metrics.projectsDueThisWeek > 0 ? `${metrics.projectsDueThisWeek} Due Soon` : 'On Track'}
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.5rem' }}>
-                <span className="kpi-metric" style={{ marginTop: 0 }}>
-                  {metrics.activeProjectsCount}
-                </span>
-                <span style={{ fontSize: '12px', color: metrics.projectsDueThisWeek > 0 ? '#ffb95f' : 'var(--on-surface-variant)' }}>
-                  {metrics.projectsDueThisWeek > 0 ? `${metrics.projectsDueThisWeek} due this week` : 'on schedule'}
-                </span>
-              </div>
+              <div className="kpi-metric">{metrics.activeProjectsCount}</div>
             </div>
 
             {/* Card 3: Outstanding Invoices */}
             <div
-              className="kpi-card hover-level-2-spacious"
+              className="kpi-card"
               onClick={() => router.push('/invoices')}
-              style={{ cursor: 'pointer' }}
               title="View Invoices"
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   OUTSTANDING
                 </span>
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
-                  receipt_long
+                <span className="badge-pill badge-pill-coral">
+                  {metrics.awaitingInvoicesCount} Awaiting
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.5rem' }}>
-                <span className="kpi-metric" style={{ marginTop: 0, color: metrics.outstandingInvoicesAmount > 0 ? '#ffb4ab' : '#fff' }}>
-                  ${Number(metrics.outstandingInvoicesAmount || 0).toLocaleString()}
-                </span>
-                <span style={{ fontSize: '12px', color: metrics.awaitingInvoicesCount > 0 ? '#ffb4ab' : 'var(--on-surface-variant)' }}>
-                  {metrics.awaitingInvoicesCount} awaiting
-                </span>
+              <div className="kpi-metric" style={{ color: metrics.outstandingInvoicesAmount > 0 ? '#ffb4ab' : '#fff' }}>
+                ${Number(metrics.outstandingInvoicesAmount || 0).toLocaleString()}
               </div>
             </div>
 
             {/* Card 4: Monthly Revenue */}
             <div
-              className="kpi-card hover-level-2-spacious"
+              className="kpi-card"
               onClick={() => router.push('/invoices')}
-              style={{ cursor: 'pointer' }}
               title="View Billing"
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   COLLECTED REV
                 </span>
-                <div style={{ background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                <span className="badge-pill badge-pill-teal">
                   Paid
-                </div>
+                </span>
               </div>
               <div className="kpi-metric" style={{ color: '#4edea3' }}>
                 ${Number(metrics.monthlyRevenue || 0).toLocaleString()}
@@ -284,18 +261,17 @@ export default function DashboardPage() {
 
             {/* Card 5: Conversion Win Rate */}
             <div
-              className="kpi-card hover-level-2-spacious"
+              className="kpi-card"
               onClick={() => router.push('/pipeline')}
-              style={{ cursor: 'pointer' }}
               title="View Conversion"
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   WIN RATE
                 </span>
-                <div style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                <span className="badge-pill badge-pill-purple">
                   {metrics.closedWonCount} Won
-                </div>
+                </span>
               </div>
               <div className="kpi-metric">{metrics.winRate}%</div>
             </div>
@@ -310,7 +286,7 @@ export default function DashboardPage() {
             </h2>
             <button
               onClick={() => router.push('/pipeline')}
-              style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: '12px', color: '#d0bcff', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
             >
               View Full Pipeline →
             </button>
@@ -324,7 +300,7 @@ export default function DashboardPage() {
                   className="kanban-col skeleton-pulse"
                   style={{
                     height: '140px',
-                    borderRadius: 'var(--radius-lg)',
+                    borderRadius: '12px',
                     display: 'flex',
                     flexDirection: 'column',
                     padding: '1rem',
@@ -341,11 +317,11 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="kanban-row" style={{ minHeight: '140px' }}>
-            {/* Col 1: New Leads (Level 3 Subtle Container Interaction) */}
+            {/* Col 1: New Leads */}
             <div className="kanban-col hover-level-3">
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
                 <span>New Leads</span>
-                <span style={{ background: 'var(--surface-container)', padding: '0.1rem 0.5rem', borderRadius: '9999px', fontSize: '11px' }}>
+                <span className="badge-pill" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--on-surface-variant)' }}>
                   {pipeline.newLeads.length}
                 </span>
               </div>
@@ -360,17 +336,17 @@ export default function DashboardPage() {
                     key={lead.id}
                     className="kanban-card hover-level-2"
                     onClick={() => router.push('/leads')}
-                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem' }}
+                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem', borderRadius: '8px' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#38bdf8', color: '#082f49', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 800 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                      <div style={{ width: '20px', height: '20px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 800 }}>
                         {(lead.companyName || lead.firstName || 'L')[0].toUpperCase()}
                       </div>
                       <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>
                         {lead.companyName || `${lead.firstName} ${lead.lastName}`}
                       </span>
                     </div>
-                    <span style={{ fontSize: '11px', color: '#4edea3', fontWeight: 700 }}>
+                    <span className="badge-pill badge-pill-teal" style={{ fontSize: '10px' }}>
                       Score: {lead.leadScore || 70}/100
                     </span>
                   </div>
@@ -378,11 +354,11 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Col 2: Qualified (Level 3 Subtle Container Interaction) */}
+            {/* Col 2: Qualified */}
             <div className="kanban-col hover-level-3">
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
                 <span>Qualified</span>
-                <span style={{ background: 'var(--surface-container)', padding: '0.1rem 0.5rem', borderRadius: '9999px', fontSize: '11px' }}>
+                <span className="badge-pill" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--on-surface-variant)' }}>
                   {pipeline.qualifiedLeads.length}
                 </span>
               </div>
@@ -397,17 +373,17 @@ export default function DashboardPage() {
                     key={lead.id}
                     className="kanban-card hover-level-2"
                     onClick={() => router.push('/leads')}
-                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem' }}
+                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem', borderRadius: '8px' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#4edea3', color: '#003822', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 800 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                      <div style={{ width: '20px', height: '20px', borderRadius: '6px', background: 'rgba(78, 222, 163, 0.2)', color: '#4edea3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 800 }}>
                         {(lead.companyName || lead.firstName || 'Q')[0].toUpperCase()}
                       </div>
                       <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>
                         {lead.companyName || `${lead.firstName} ${lead.lastName}`}
                       </span>
                     </div>
-                    <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700 }}>
+                    <span className="badge-pill badge-pill-cyan" style={{ fontSize: '10px' }}>
                       Ready for Proposal
                     </span>
                   </div>
@@ -415,11 +391,11 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Col 3: Proposal Stage (Level 3 Subtle Container Interaction) */}
+            {/* Col 3: Proposal Stage */}
             <div className="kanban-col hover-level-3">
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
                 <span>Proposal Sent</span>
-                <span style={{ background: 'var(--surface-container)', padding: '0.1rem 0.5rem', borderRadius: '9999px', fontSize: '11px' }}>
+                <span className="badge-pill" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--on-surface-variant)' }}>
                   {pipeline.proposalDeals.length}
                 </span>
               </div>
@@ -434,10 +410,10 @@ export default function DashboardPage() {
                     key={deal.id}
                     className="kanban-card hover-level-2"
                     onClick={() => router.push('/pipeline')}
-                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem' }}
+                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem', borderRadius: '8px' }}
                   >
-                    <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>{deal.title}</strong>
-                    <span style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 700 }}>
+                    <strong style={{ fontSize: '12px', color: '#fff', display: 'block', marginBottom: '0.25rem' }}>{deal.title}</strong>
+                    <span className="badge-pill badge-pill-cyan" style={{ fontSize: '10px' }}>
                       ${Number(deal.value || 0).toLocaleString()}
                     </span>
                   </div>
@@ -445,11 +421,11 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Col 4: Negotiation (Level 3 Subtle Container Interaction) */}
+            {/* Col 4: Negotiation */}
             <div className="kanban-col hover-level-3">
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: '0.4rem' }}>
                 <span>Negotiation</span>
-                <span style={{ background: 'var(--surface-container)', padding: '0.1rem 0.5rem', borderRadius: '9999px', fontSize: '11px' }}>
+                <span className="badge-pill" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--on-surface-variant)' }}>
                   {pipeline.negotiationDeals.length}
                 </span>
               </div>
@@ -464,10 +440,10 @@ export default function DashboardPage() {
                     key={deal.id}
                     className="kanban-card hover-level-2"
                     onClick={() => router.push('/pipeline')}
-                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem' }}
+                    style={{ cursor: 'pointer', padding: '0.75rem', marginBottom: '0.5rem', borderRadius: '8px' }}
                   >
-                    <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>{deal.title}</strong>
-                    <span style={{ fontSize: '12px', color: '#ffb95f', fontWeight: 700 }}>
+                    <strong style={{ fontSize: '12px', color: '#fff', display: 'block', marginBottom: '0.25rem' }}>{deal.title}</strong>
+                    <span className="badge-pill badge-pill-amber" style={{ fontSize: '10px' }}>
                       ${Number(deal.value || 0).toLocaleString()}
                     </span>
                   </div>
@@ -475,7 +451,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Col 5: Closed Won (Level 3 Subtle Container Interaction) */}
+            {/* Col 5: Closed Won */}
             <div
               className="kanban-col hover-level-3"
               onClick={() => router.push('/pipeline')}
@@ -485,6 +461,7 @@ export default function DashboardPage() {
                 cursor: 'pointer',
                 background: 'rgba(78, 222, 163, 0.04)',
                 border: '1px solid rgba(78, 222, 163, 0.15)',
+                borderRadius: '12px',
               }}
               title="View Closed Deals in Pipeline"
             >
@@ -500,7 +477,7 @@ export default function DashboardPage() {
         {/* 4. Middle Grid: Urgent Tasks & Real Recent Projects */}
         {loading ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
-            <div className="glass-card skeleton-pulse" style={{ height: '260px', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="glass-card skeleton-pulse" style={{ height: '260px', borderRadius: '12px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="skeleton-bone" style={{ width: '130px', height: '16px' }} />
                 <div className="skeleton-bone" style={{ width: '90px', height: '12px' }} />
@@ -512,7 +489,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="glass-card skeleton-pulse" style={{ height: '260px', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="glass-card skeleton-pulse" style={{ height: '260px', borderRadius: '12px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="skeleton-bone" style={{ width: '130px', height: '16px' }} />
                 <div className="skeleton-bone" style={{ width: '90px', height: '12px' }} />
@@ -527,14 +504,14 @@ export default function DashboardPage() {
         ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
           {/* Urgent Tasks */}
-          <div className="glass-card hover-level-3" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="glass-card hover-level-3" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderRadius: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--on-surface)', margin: 0 }}>
                 Urgent Tasks ({urgentTasksList.length})
               </h3>
               <button
                 onClick={() => router.push('/tasks')}
-                style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ fontSize: '12px', color: '#d0bcff', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 View Sprint Board →
               </button>
@@ -544,7 +521,7 @@ export default function DashboardPage() {
               {urgentTasksList.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--on-surface-variant)', fontSize: '0.85rem' }}>
                   <p style={{ margin: '0 0 0.75rem 0' }}>No pending tasks in this workspace.</p>
-                  <button onClick={() => router.push('/tasks')} className="btn btn-primary hover-level-1" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}>
+                  <button onClick={() => router.push('/tasks')} className="btn btn-primary" style={{ height: '32px', fontSize: '0.75rem', padding: '0 12px' }}>
                     + Create First Task
                   </button>
                 </div>
@@ -560,7 +537,7 @@ export default function DashboardPage() {
                       gap: '0.75rem',
                       padding: '0.65rem 0.85rem',
                       borderRadius: '8px',
-                      background: 'var(--surface-container-high)',
+                      background: 'rgba(255, 255, 255, 0.03)',
                       cursor: 'pointer',
                       border: '1px solid rgba(255,255,255,0.06)',
                     }}
@@ -579,6 +556,7 @@ export default function DashboardPage() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
+                        flexShrink: 0,
                       }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -586,7 +564,7 @@ export default function DashboardPage() {
                         {task.title}
                       </p>
                     </div>
-                    <span style={{ fontSize: '10px', fontWeight: 700, padding: '0.15rem 0.4rem', borderRadius: '4px', background: task.priority === 'HIGH' ? 'rgba(255, 180, 171, 0.2)' : 'rgba(56, 189, 248, 0.2)', color: task.priority === 'HIGH' ? '#ffb4ab' : '#38bdf8' }}>
+                    <span className={`badge-pill ${task.priority === 'HIGH' ? 'badge-pill-coral' : task.priority === 'LOW' ? 'badge-pill-teal' : 'badge-pill-cyan'}`}>
                       {task.priority || 'MEDIUM'}
                     </span>
                   </div>
@@ -596,14 +574,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Real Recent Projects Table */}
-          <div className="glass-card hover-level-3" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="glass-card hover-level-3" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderRadius: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--on-surface)', margin: 0 }}>
                 Recent Projects ({projectsList.length})
               </h3>
               <button
                 onClick={() => router.push('/projects')}
-                style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ fontSize: '12px', color: '#d0bcff', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 View Roadmaps →
               </button>
@@ -613,7 +591,7 @@ export default function DashboardPage() {
               {projectsList.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--on-surface-variant)', fontSize: '0.85rem' }}>
                   <p style={{ margin: '0 0 0.75rem 0' }}>No active projects recorded yet.</p>
-                  <button onClick={() => router.push('/projects')} className="btn btn-primary hover-level-1" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}>
+                  <button onClick={() => router.push('/projects')} className="btn btn-primary" style={{ height: '32px', fontSize: '0.75rem', padding: '0 12px' }}>
                     + Create First Project
                   </button>
                 </div>
@@ -629,7 +607,7 @@ export default function DashboardPage() {
                       justifyContent: 'space-between',
                       padding: '0.65rem 0.85rem',
                       borderRadius: '8px',
-                      background: 'var(--surface-container-high)',
+                      background: 'rgba(255, 255, 255, 0.03)',
                       border: '1px solid rgba(255,255,255,0.06)',
                       cursor: 'pointer',
                     }}
@@ -641,7 +619,7 @@ export default function DashboardPage() {
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                       <span style={{ fontSize: '12px', fontWeight: 700, color: '#38bdf8' }}>{p.progress || 0}%</span>
-                      <span style={{ padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '10px', fontWeight: 700, background: p.status === 'ON TRACK' ? 'rgba(78, 222, 163, 0.15)' : 'rgba(255, 185, 95, 0.15)', color: p.status === 'ON TRACK' ? '#4edea3' : '#ffb95f' }}>
+                      <span className={`badge-pill ${p.status === 'ON TRACK' ? 'badge-pill-teal' : p.status === 'AT RISK' ? 'badge-pill-coral' : 'badge-pill-amber'}`}>
                         {p.status || 'ON TRACK'}
                       </span>
                     </div>
