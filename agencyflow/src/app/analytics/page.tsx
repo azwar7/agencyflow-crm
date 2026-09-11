@@ -274,71 +274,71 @@ export default function AnalyticsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
               
               {/* KPI 1: Avg Deal Size */}
-              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="kpi-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>AVG DEAL SIZE</span>
-                  <Wallet size={16} color="var(--primary)" />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>AVG DEAL SIZE</span>
+                  <Wallet size={16} color="#d0bcff" />
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-surface)' }}>{kpis.avgDealSize}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--secondary)' }}>
+                <div className="kpi-metric">{kpis.avgDealSize}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#4edea3', marginTop: '0.35rem' }}>
                   <TrendingUp size={12} /> <span>{kpis.avgDealTrend} vs prior</span>
                 </div>
               </div>
 
               {/* KPI 2: Avg Sales Cycle */}
-              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="kpi-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>AVG SALES CYCLE</span>
-                  <Clock size={16} color="var(--secondary)" />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>AVG SALES CYCLE</span>
+                  <Clock size={16} color="#4edea3" />
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-surface)' }}>{kpis.avgSalesCycle}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--secondary)' }}>
+                <div className="kpi-metric">{kpis.avgSalesCycle}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#4edea3', marginTop: '0.35rem' }}>
                   <TrendingDown size={12} /> <span>{kpis.cycleTrend}</span>
                 </div>
               </div>
 
               {/* KPI 3: Win Rate */}
-              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="kpi-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>WIN RATE</span>
-                  <Target size={16} color="var(--primary)" />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>WIN RATE</span>
+                  <Target size={16} color="#d0bcff" />
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-surface)' }}>{kpis.winRate}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--secondary)' }}>
-                  <TrendingUp size={12} /> <span>{kpis.winRateTrend} win efficiency</span>
+                <div className="kpi-metric">{kpis.winRate}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#4edea3', marginTop: '0.35rem' }}>
+                  <TrendingUp size={12} /> <span>{kpis.winRateTrend} efficiency</span>
                 </div>
               </div>
 
               {/* KPI 4: Pipeline Value */}
-              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="kpi-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>PIPELINE VALUE</span>
-                  <BarChart3 size={16} color="var(--tertiary)" />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>PIPELINE VALUE</span>
+                  <BarChart3 size={16} color="#ffb95f" />
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-surface)' }}>{kpis.pipelineValue}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--secondary)' }}>
-                  <TrendingUp size={12} /> <span>{kpis.pipelineTrend} active deals</span>
+                <div className="kpi-metric">{kpis.pipelineValue}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#4edea3', marginTop: '0.35rem' }}>
+                  <TrendingUp size={12} /> <span>{kpis.pipelineTrend} active</span>
                 </div>
               </div>
 
               {/* KPI 5: Active Deals */}
-              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="kpi-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>ACTIVE DEALS</span>
-                  <Users size={16} color="var(--primary)" />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>ACTIVE DEALS</span>
+                  <Users size={16} color="#38bdf8" />
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-surface)' }}>{kpis.activeDealsCount} Deals</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>In active stages</div>
+                <div className="kpi-metric">{kpis.activeDealsCount} Deals</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.35rem' }}>In active stages</div>
               </div>
 
               {/* KPI 6: Revenue Growth */}
-              <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="kpi-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>REVENUE GROWTH</span>
-                  <Trophy size={16} color="var(--secondary)" />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>REVENUE GROWTH</span>
+                  <Trophy size={16} color="#4edea3" />
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--secondary)' }}>{kpis.revenueGrowth}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>Year over year</div>
+                <div className="kpi-metric" style={{ color: '#4edea3' }}>{kpis.revenueGrowth}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.35rem' }}>Year over year</div>
               </div>
             </div>
 

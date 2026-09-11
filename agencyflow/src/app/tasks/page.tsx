@@ -378,7 +378,6 @@ export default function TasksPage() {
                     setIsCreateModalOpen(true);
                   }}
                   className="btn btn-primary"
-                  style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#3b82f6', border: 'none', fontWeight: 700 }}
                 >
                   <Plus size={16} /> Create Task
                 </button>
@@ -607,18 +606,15 @@ export default function TasksPage() {
                             {/* Priority Badge & Due Date */}
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                               <span
-                                style={{
-                                  padding: '0.15rem 0.5rem',
-                                  borderRadius: '4px',
-                                  background: priorityBg,
-                                  color: priorityColor,
-                                  border: priorityBorder,
-                                  fontSize: '0.7rem',
-                                  fontWeight: 700,
-                                  textTransform: 'capitalize',
-                                }}
+                                className={`badge-pill ${
+                                  t.priority === 'HIGH'
+                                    ? 'badge-pill-coral'
+                                    : t.priority === 'LOW'
+                                    ? 'badge-pill-teal'
+                                    : 'badge-pill-cyan'
+                                }`}
                               >
-                                {t.priority.toLowerCase()}
+                                {t.priority}
                               </span>
 
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 500 }}>

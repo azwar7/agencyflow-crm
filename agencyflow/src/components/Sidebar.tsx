@@ -116,14 +116,15 @@ export function Sidebar() {
               width: '34px',
               height: '34px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #38bdf8, #2563eb)',
+              background: 'linear-gradient(135deg, #d0bcff, #a855f7)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#fff',
+              color: '#1a0050',
               fontWeight: 800,
               fontSize: '0.85rem',
               flexShrink: 0,
+              boxShadow: '0 0 12px rgba(208, 188, 255, 0.3)',
             }}
           >
             {initials}

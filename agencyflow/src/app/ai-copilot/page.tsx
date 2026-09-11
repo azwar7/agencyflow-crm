@@ -502,12 +502,12 @@ You can ask me questions, request complete data tables (e.g. *"all the leads tha
                 width: '32px',
                 height: '32px',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, #a855f7, #38bdf8)',
+                background: 'linear-gradient(135deg, #d0bcff, #a855f7)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#fff',
-                boxShadow: '0 0 16px rgba(168, 85, 247, 0.35)',
+                color: '#1a0050',
+                boxShadow: '0 0 16px rgba(208, 188, 255, 0.35)',
               }}
             >
               <Cpu size={18} />
@@ -667,14 +667,14 @@ You can ask me questions, request complete data tables (e.g. *"all the leads tha
                         width: '30px',
                         height: '30px',
                         borderRadius: '8px',
-                        background: 'linear-gradient(135deg, #a855f7, #38bdf8)',
+                        background: 'linear-gradient(135deg, #d0bcff, #a855f7)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#fff',
+                        color: '#1a0050',
                         flexShrink: 0,
                         marginTop: '2px',
-                        boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)',
+                        boxShadow: '0 0 10px rgba(208, 188, 255, 0.3)',
                       }}
                     >
                       <Bot size={16} />
@@ -693,12 +693,12 @@ You can ask me questions, request complete data tables (e.g. *"all the leads tha
                     <div
                       style={{
                         background: isUser
-                          ? 'linear-gradient(135deg, #3b82f6, #2563eb)'
+                          ? 'rgba(208, 188, 255, 0.16)'
                           : 'var(--surface-container)',
-                        color: '#fff',
+                        color: isUser ? '#f5f3ff' : '#fff',
                         padding: isUser ? '0.75rem 1.1rem' : '1.1rem 1.35rem',
                         borderRadius: isUser ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-                        border: isUser ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                        border: isUser ? '1px solid rgba(208, 188, 255, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                         fontSize: '0.9rem',
                         lineHeight: 1.6,
                         boxShadow: '0 4px 18px rgba(0, 0, 0, 0.22)',
@@ -943,20 +943,10 @@ You can ask me questions, request complete data tables (e.g. *"all the leads tha
           <button
             onClick={() => handleSendMessage()}
             disabled={!inputQuery.trim() || loading}
+            className={`btn ${inputQuery.trim() && !loading ? 'btn-primary' : 'btn-secondary'}`}
             style={{
-              background: inputQuery.trim() && !loading ? 'linear-gradient(135deg, #a855f7, #38bdf8)' : 'var(--surface-container-high)',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '0.55rem 1.05rem',
-              color: inputQuery.trim() && !loading ? '#fff' : 'var(--outline)',
+              opacity: inputQuery.trim() && !loading ? 1 : 0.4,
               cursor: inputQuery.trim() && !loading ? 'pointer' : 'not-allowed',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              fontWeight: 700,
-              fontSize: '0.825rem',
-              transition: 'all 0.15s ease',
-              boxShadow: inputQuery.trim() && !loading ? '0 0 15px rgba(168, 85, 247, 0.3)' : 'none',
             }}
           >
             <Send size={14} /> Send

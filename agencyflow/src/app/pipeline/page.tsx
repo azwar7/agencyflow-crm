@@ -98,7 +98,7 @@ export default function PipelinePage() {
           </p>
         </div>
 
-        <button onClick={fetchPipeline} className="btn btn-secondary hover-level-1" style={{ fontSize: '0.85rem' }}>
+        <button onClick={fetchPipeline} className="btn btn-secondary">
           Refresh Pipeline
         </button>
       </div>
@@ -112,7 +112,7 @@ export default function PipelinePage() {
       ) : error ? (
         <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--error)' }}>
           <p>{error}</p>
-          <button onClick={fetchPipeline} className="btn btn-secondary hover-level-1" style={{ marginTop: '1rem' }}>
+          <button onClick={fetchPipeline} className="btn btn-secondary" style={{ marginTop: '1rem' }}>
             Retry
           </button>
         </div>
@@ -129,32 +129,30 @@ export default function PipelinePage() {
       ) : (
         <div className="kanban-grid">
           {pipelineData.columns.map((col: any) => (
-            <div key={col.stageId} className="kanban-column hover-level-3">
+            <div key={col.stageId} className="kanban-column">
               {/* Column Header */}
-              <div className="kanban-header">
-                <div>
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>{col.label}</h3>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
-                    ${col.totalValue.toLocaleString()} ({col.count})
-                  </span>
-                </div>
+              <div className="kanban-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--on-surface)', margin: 0 }}>{col.label}</h3>
+                <span className="badge-pill badge-pill-cyan">
+                  ${col.totalValue.toLocaleString()} ({col.count})
+                </span>
               </div>
 
               {/* Column Cards */}
               <div className="kanban-body">
                 {col.deals.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--on-surface-variant)', fontSize: '0.8rem' }}>
                     No deals in this stage
                   </div>
                 ) : (
                   col.deals.map((deal: any) => (
-                    <div key={deal.id} className="deal-card hover-level-2">
+                    <div key={deal.id} className="deal-card" style={{ marginBottom: '0.65rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)' }}>
                           {deal.company?.name || 'Independent Prospect'}
                         </span>
                         {deal.lossReason && (
-                          <span title={`Loss Reason: ${deal.lossReason}`} style={{ color: 'var(--accent-danger)' }}>
+                          <span title={`Loss Reason: ${deal.lossReason}`} style={{ color: 'var(--error)' }}>
                             <AlertTriangle size={14} />
                           </span>
                         )}
@@ -164,8 +162,8 @@ export default function PipelinePage() {
                         {deal.title}
                       </h4>
 
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
-                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-success)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                        <span className="badge-pill badge-pill-teal" style={{ fontSize: '11px', fontWeight: 800 }}>
                           ${deal.value.toLocaleString()}
                         </span>
 
@@ -175,12 +173,13 @@ export default function PipelinePage() {
                           onChange={(e) => handleStageChange(deal.id, e.target.value)}
                           onClick={(e) => e.stopPropagation()}
                           style={{
-                            background: 'var(--bg-primary)',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: 'var(--radius-sm)',
-                            color: 'var(--text-main)',
-                            fontSize: '0.7rem',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.12)',
+                            borderRadius: '6px',
+                            color: 'var(--on-surface)',
                             padding: '0.2rem 0.4rem',
+                            fontSize: '0.75rem',
+                            outline: 'none',
                             cursor: 'pointer',
                           }}
                         >

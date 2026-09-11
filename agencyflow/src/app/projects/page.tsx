@@ -256,16 +256,7 @@ export default function ProjectsOverviewPage() {
 
             <button
               onClick={() => setIsNewProjectModalOpen(true)}
-              className="btn btn-primary hover-level-1"
-              style={{
-                background: 'linear-gradient(135deg, #38bdf8, #2563eb)',
-                border: 'none',
-                boxShadow: '0 0 20px rgba(56, 189, 248, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontWeight: 700,
-              }}
+              className="btn btn-primary"
             >
               <Plus size={16} /> New Project
             </button>
@@ -273,51 +264,43 @@ export default function ProjectsOverviewPage() {
         </div>
 
         {/* Top KPI Metric Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
           {/* Total Revenue in Delivery */}
-          <div className="hover-level-2-spacious cursor-pointer" style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Delivery Pipeline</span>
+              <DollarSign size={16} color="#4edea3" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Delivery Pipeline</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>${totalRevenueInDelivery.toLocaleString()}</div>
-            </div>
+            <div className="kpi-metric">${totalRevenueInDelivery.toLocaleString()}</div>
           </div>
 
           {/* Active Projects */}
-          <div className="hover-level-2-spacious cursor-pointer" style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FolderKanban size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Projects</span>
+              <FolderKanban size={16} color="#38bdf8" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Active Projects</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>{totalProjects}</div>
-            </div>
+            <div className="kpi-metric">{totalProjects}</div>
           </div>
 
           {/* On Track Rate */}
-          <div className="hover-level-2-spacious cursor-pointer" style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Delivery Health</span>
+              <TrendingUp size={16} color="#4edea3" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Delivery Health</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#4edea3' }}>
-                {totalProjects > 0 ? `${Math.round((onTrackProjects / totalProjects) * 100)}%` : '100%'}
-              </div>
+            <div className="kpi-metric" style={{ color: '#4edea3' }}>
+              {totalProjects > 0 ? `${Math.round((onTrackProjects / totalProjects) * 100)}%` : '100%'}
             </div>
           </div>
 
           {/* At Risk Projects */}
-          <div className="hover-level-2-spacious cursor-pointer" style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: atRiskProjects > 0 ? 'rgba(255, 185, 95, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: atRiskProjects > 0 ? '#ffb95f' : '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AlertTriangle size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>At Risk Milestones</span>
+              <AlertTriangle size={16} color={atRiskProjects > 0 ? '#ffb4ab' : '#94a3b8'} />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>At Risk Milestones</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: atRiskProjects > 0 ? '#ffb95f' : '#fff' }}>{atRiskProjects}</div>
-            </div>
+            <div className="kpi-metric" style={{ color: atRiskProjects > 0 ? '#ffb4ab' : '#fff' }}>{atRiskProjects}</div>
           </div>
         </div>
 
@@ -333,9 +316,9 @@ export default function ProjectsOverviewPage() {
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 cursor: 'pointer',
-                background: statusFilter === st ? 'rgba(56, 189, 248, 0.2)' : 'var(--surface-container-low)',
-                border: statusFilter === st ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
-                color: statusFilter === st ? '#38bdf8' : 'var(--on-surface-variant)',
+                background: statusFilter === st ? 'rgba(208, 188, 255, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                border: statusFilter === st ? '1px solid #d0bcff' : '1px solid rgba(255, 255, 255, 0.08)',
+                color: statusFilter === st ? '#d0bcff' : 'var(--on-surface-variant)',
                 transition: 'all 0.15s ease',
               }}
             >

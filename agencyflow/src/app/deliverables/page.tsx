@@ -275,20 +275,26 @@ export default function DeliverablesPage() {
     switch (status) {
       case 'APPROVED':
         return (
-          <span style={{ padding: '0.2rem 0.65rem', borderRadius: '9999px', background: 'rgba(78, 222, 163, 0.18)', border: '1px solid rgba(78, 222, 163, 0.3)', color: '#4edea3', fontSize: '0.75rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-            <CheckCircle size={12} /> APPROVED
+          <span className="badge-pill badge-pill-teal">
+            <CheckCircle size={11} /> APPROVED
           </span>
         );
       case 'PENDING CLIENT REVIEW':
         return (
-          <span style={{ padding: '0.2rem 0.65rem', borderRadius: '9999px', background: 'rgba(56, 189, 248, 0.18)', border: '1px solid rgba(56, 189, 248, 0.3)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-            <Clock size={12} /> IN REVIEW
+          <span className="badge-pill badge-pill-cyan">
+            <Clock size={11} /> IN REVIEW
           </span>
         );
       case 'REVISION REQUESTED':
         return (
-          <span style={{ padding: '0.2rem 0.65rem', borderRadius: '9999px', background: 'rgba(255, 185, 95, 0.18)', border: '1px solid rgba(255, 185, 95, 0.3)', color: '#ffb95f', fontSize: '0.75rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-            <AlertCircle size={12} /> REVISIONS
+          <span className="badge-pill badge-pill-amber">
+            <AlertCircle size={11} /> REVISIONS
+          </span>
+        );
+      default:
+        return (
+          <span className="badge-pill badge-pill-purple">
+            {status}
           </span>
         );
     }
@@ -401,15 +407,6 @@ export default function DeliverablesPage() {
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="btn btn-primary"
-              style={{
-                background: 'linear-gradient(135deg, #a855f7, #6366f1)',
-                border: 'none',
-                boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontWeight: 700,
-              }}
             >
               <Upload size={15} /> Upload Asset
             </button>
@@ -429,49 +426,41 @@ export default function DeliverablesPage() {
         )}
 
         {/* Top Approval SLA Metrics Bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
           {/* Pending Sign-off */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Clock size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>In Client Review</span>
+              <Clock size={16} color="#38bdf8" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>In Client Review</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#38bdf8' }}>{pendingCount}</div>
-            </div>
+            <div className="kpi-metric">{pendingCount}</div>
           </div>
 
           {/* Approved This Month */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CheckCircle size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Approved & Ready</span>
+              <CheckCircle size={16} color="#4edea3" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Approved & Ready</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#4edea3' }}>{approvedCount}</div>
-            </div>
+            <div className="kpi-metric" style={{ color: '#4edea3' }}>{approvedCount}</div>
           </div>
 
           {/* Revisions Active */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255, 185, 95, 0.15)', color: '#ffb95f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AlertCircle size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Revisions Active</span>
+              <AlertCircle size={16} color={revisionsCount > 0 ? '#ffb95f' : '#94a3b8'} />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Revisions Active</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#ffb95f' }}>{revisionsCount}</div>
-            </div>
+            <div className="kpi-metric" style={{ color: revisionsCount > 0 ? '#ffb95f' : '#fff' }}>{revisionsCount}</div>
           </div>
 
           {/* SLA Turnaround */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Sparkles size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Avg Turnaround</span>
+              <Sparkles size={16} color="#d0bcff" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Avg Turnaround</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>1.8 days</div>
-            </div>
+            <div className="kpi-metric">1.8 days</div>
           </div>
         </div>
 

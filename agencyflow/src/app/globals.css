@@ -16,9 +16,9 @@
   --outline-variant: #464554;
 
   /* Accent Colors */
-  --primary: #c0c1ff;
-  --on-primary: #1000a9;
-  --primary-fixed-dim: #c0c1ff;
+  --primary: #d0bcff;
+  --on-primary: #1a0050;
+  --primary-fixed-dim: #d0bcff;
   --secondary: #4edea3;
   --on-secondary: #003824;
   --tertiary: #ffb95f;
@@ -607,7 +607,8 @@ button {
 }
 
 /* 5-Column Desktop Grid for Pipeline */
-.kanban-row {
+.kanban-row,
+.kanban-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1rem;
@@ -616,11 +617,12 @@ button {
 }
 
 /* Pipeline Stage Columns */
-.kanban-col {
+.kanban-col,
+.kanban-column {
   background: rgba(23, 27, 38, 0.4);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 0.75rem;
+  padding: 0.85rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -631,18 +633,27 @@ button {
 }
 
 /* Pipeline Cards */
-.kanban-card {
+.kanban-card,
+.deal-card {
   background: rgba(28, 31, 42, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: 0.75rem;
-  border-radius: var(--radius-DEFAULT);
-  border: 1px solid rgba(144, 143, 160, 0.15);
+  padding: 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
   position: relative;
   cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kanban-card:hover,
+.deal-card:hover {
+  border-color: rgba(208, 188, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Drawer Backdrop & Content */

@@ -768,21 +768,8 @@ export default function LeadsPage() {
               <button
                 type="button"
                 onClick={() => setIsWidgetOpen(true)}
-                style={{
-                  padding: '0.45rem 0.9rem',
-                  background: 'rgba(56, 189, 248, 0.15)',
-                  border: '1px solid rgba(56, 189, 248, 0.4)',
-                  borderRadius: 'var(--radius-DEFAULT)',
-                  color: '#38bdf8',
-                  fontSize: '0.875rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 0 15px rgba(56, 189, 248, 0.2)',
-                  transition: 'all 0.15s ease',
-                }}
+                className="btn btn-secondary"
+                style={{ borderColor: 'rgba(56, 189, 248, 0.4)', color: '#38bdf8' }}
                 title="A lead-finding workflow is currently active in the background. Click to view status."
               >
                 <Loader2 size={16} className="spin" color="#38bdf8" />
@@ -792,24 +779,10 @@ export default function LeadsPage() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event('agencyflow-open-lead-finder'))}
-                style={{
-                  padding: '0.45rem 0.9rem',
-                  background: 'linear-gradient(135deg, rgba(111, 251, 190, 0.15) 0%, rgba(56, 189, 248, 0.15) 100%)',
-                  border: '1px solid rgba(111, 251, 190, 0.35)',
-                  borderRadius: 'var(--radius-DEFAULT)',
-                  color: '#6ffbbe',
-                  fontSize: '0.875rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 0 15px rgba(111, 251, 190, 0.12)',
-                  transition: 'all 0.15s ease',
-                }}
+                className="btn btn-secondary"
                 title="Find Leads with AI automation"
               >
-                <Sparkles size={16} color="#6ffbbe" />
+                <Sparkles size={16} color="#d0bcff" />
                 Find Leads with AI
               </button>
             )}
@@ -817,7 +790,7 @@ export default function LeadsPage() {
             {/* New Lead Button */}
             <button
               onClick={() => window.dispatchEvent(new Event('agencyflow-open-new-lead'))}
-              className="btn btn-secondary"
+              className="btn btn-primary"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
               Add Lead
@@ -857,7 +830,7 @@ export default function LeadsPage() {
                   onDrop={(e) => handleDrop(e, stg.id)}
                   style={{
                     background: isOverThisStage ? 'rgba(56, 189, 248, 0.08)' : 'var(--surface-container-lowest)',
-                    borderRadius: 'var(--radius-lg)',
+                    borderRadius: '12px',
                     padding: '1rem',
                     border: isOverThisStage ? '2px dashed #38bdf8' : '1px solid rgba(255, 255, 255, 0.05)',
                     boxShadow: isOverThisStage ? '0 0 25px rgba(56, 189, 248, 0.15)' : 'none',
@@ -874,7 +847,7 @@ export default function LeadsPage() {
                           {stg.label}
                         </h2>
                       </div>
-                      <span style={{ padding: '0.1rem 0.45rem', borderRadius: '9999px', background: 'var(--surface-container-high)', fontSize: '10px', fontWeight: 700, color: 'var(--on-surface-variant)', flexShrink: 0 }}>
+                      <span className="badge-pill" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--on-surface-variant)' }}>
                         {stageLeads.length}
                       </span>
                     </div>

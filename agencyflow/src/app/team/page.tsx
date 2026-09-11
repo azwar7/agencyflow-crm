@@ -259,15 +259,6 @@ export default function TeamPage() {
                 setIsInviteModalOpen(true);
               }}
               className="btn btn-primary"
-              style={{
-                background: 'linear-gradient(135deg, #38bdf8, #2563eb)',
-                border: 'none',
-                boxShadow: '0 0 20px rgba(56, 189, 248, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontWeight: 700,
-              }}
             >
               <UserPlus size={16} /> {user?.persona === 'FREELANCER' ? 'Invite Collaborator' : 'Invite Member'}
             </button>
@@ -286,54 +277,46 @@ export default function TeamPage() {
           </div>
         )}
 
-        {/* Top Team KPI Metrics Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        {/* Top KPI Metrics Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
           {/* Total Members */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={20} />
-            </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 {user?.persona === 'FREELANCER' ? 'Active Collaborators' : 'Active Team'}
               </span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>
-                {totalMembers} {user?.persona === 'FREELANCER' ? 'Collaborators' : 'Reps & Leads'}
-              </div>
+              <Users size={16} color="#38bdf8" />
+            </div>
+            <div className="kpi-metric">
+              {totalMembers}
             </div>
           </div>
 
           {/* Revenue Won */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pipeline Attributed</span>
+              <DollarSign size={16} color="#4edea3" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Pipeline Attributed</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#4edea3' }}>${totalRevenueWon.toLocaleString()}</div>
-            </div>
+            <div className="kpi-metric" style={{ color: '#4edea3' }}>${totalRevenueWon.toLocaleString()}</div>
           </div>
 
           {/* Average Workload Capacity */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255, 185, 95, 0.15)', color: '#ffb95f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Team Bandwidth</span>
+              <TrendingUp size={16} color="#ffb95f" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Team Bandwidth</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: avgCapacity > 80 ? '#ffb95f' : '#38bdf8' }}>{avgCapacity}% Capacity</div>
-            </div>
+            <div className="kpi-metric" style={{ color: avgCapacity > 80 ? '#ffb95f' : '#fff' }}>{avgCapacity}%</div>
           </div>
 
           {/* Open Tasks Matrix */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CheckSquare size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Tasks</span>
+              <CheckSquare size={16} color="#d0bcff" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Active Tasks</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>{totalOpenTasks} In Sprint</div>
-            </div>
+            <div className="kpi-metric">{totalOpenTasks}</div>
           </div>
         </div>
 
@@ -349,9 +332,9 @@ export default function TeamPage() {
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 cursor: 'pointer',
-                background: roleFilter === r ? 'rgba(56, 189, 248, 0.2)' : 'var(--surface-container-low)',
-                border: roleFilter === r ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
-                color: roleFilter === r ? '#38bdf8' : 'var(--on-surface-variant)',
+                background: roleFilter === r ? 'rgba(208, 188, 255, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                border: roleFilter === r ? '1px solid #d0bcff' : '1px solid rgba(255, 255, 255, 0.08)',
+                color: roleFilter === r ? '#d0bcff' : 'var(--on-surface-variant)',
                 transition: 'all 0.15s ease',
               }}
             >

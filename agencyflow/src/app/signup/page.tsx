@@ -424,11 +424,8 @@ export default function SignupPage() {
               className="btn btn-primary"
               style={{
                 width: '100%',
-                padding: '0.85rem',
+                height: '42px',
                 marginTop: '0.5rem',
-                background: persona === 'AGENCY' ? 'linear-gradient(135deg, #38bdf8, #2563eb)' : 'linear-gradient(135deg, #a855f7, #6366f1)',
-                border: 'none',
-                fontWeight: 700,
                 fontSize: '0.95rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -498,10 +495,7 @@ export default function SignupPage() {
               className="btn btn-primary"
               style={{
                 width: '100%',
-                padding: '0.85rem',
-                background: 'linear-gradient(135deg, #10b981, #059669)',
-                border: 'none',
-                fontWeight: 700,
+                height: '42px',
                 fontSize: '0.95rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -545,7 +539,7 @@ export default function SignupPage() {
         <div style={{ textAlign: 'center', marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
           <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', margin: 0 }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: '#38bdf8', fontWeight: 700, textDecoration: 'none' }}>
+            <Link href="/login" style={{ color: '#d0bcff', fontWeight: 700, textDecoration: 'none' }}>
               Log in
             </Link>
           </p>

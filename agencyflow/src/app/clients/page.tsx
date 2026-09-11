@@ -234,74 +234,72 @@ export default function ClientsOverviewPage() {
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="btn btn-primary hover-level-1"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1.15rem' }}
+              className="btn btn-primary"
             >
-              <Plus size={18} /> Add Client Account
+              <Plus size={16} /> Add Client Account
             </button>
 
             <Link
               href={clients.length > 0 ? `/clients/portal?clientId=${clients[0].id}` : '/clients/portal'}
-              className="btn btn-secondary hover-level-1"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1.15rem' }}
+              className="btn btn-secondary"
             >
-              <Eye size={18} /> Client Portal View
+              <Eye size={16} /> Client Portal View
             </Link>
           </div>
         </div>
 
         {/* Summary Metrics Cards */}
-        <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
           {/* Active Retainers */}
-          <div className="glass-card hover-level-2-spacious cursor-pointer" style={{ padding: '1.25rem 1.5rem', borderRadius: '1rem', background: 'var(--surface-container)' }}>
+          <div className="kpi-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 ACTIVE RETAINERS
               </span>
-              <div style={{ background: totalRetainerRevenue > 0 ? 'rgba(0, 165, 114, 0.2)' : 'rgba(255, 255, 255, 0.06)', color: totalRetainerRevenue > 0 ? 'var(--secondary)' : 'var(--on-surface-variant)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '2px' }}>
-                {totalRetainerRevenue > 0 ? <><TrendingUp size={12} /> Active</> : 'Contracted: $0'}
-              </div>
+              <span className={`badge-pill ${totalRetainerRevenue > 0 ? 'badge-pill-teal' : 'badge-pill-cyan'}`}>
+                {totalRetainerRevenue > 0 ? 'Active' : '$0'}
+              </span>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: totalRetainerRevenue > 0 ? 'var(--secondary)' : 'var(--on-surface)', marginTop: '0.4rem' }}>
+            <div className="kpi-metric" style={{ color: totalRetainerRevenue > 0 ? '#4edea3' : 'var(--on-surface)' }}>
               ${totalRetainerRevenue.toLocaleString()} / mo
             </div>
-            <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', margin: '0.2rem 0 0 0' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.35rem' }}>
               {totalRetainerRevenue > 0 ? 'Contracted recurring revenue' : 'No active retainers contracted'}
             </p>
           </div>
 
           {/* Total Accounts */}
-          <div className="glass-card hover-level-2-spacious cursor-pointer" style={{ padding: '1.25rem 1.5rem', borderRadius: '1rem', background: 'var(--surface-container)' }}>
+          <div className="kpi-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 TOTAL ACCOUNTS
               </span>
-              <span style={{ background: clients.length > 0 ? 'rgba(192, 193, 255, 0.15)' : 'rgba(255, 255, 255, 0.06)', color: clients.length > 0 ? 'var(--primary)' : 'var(--on-surface-variant)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
-                {clients.length > 0 ? `${clients.length} Total Accounts` : '0 added this quarter'}
+              <span className="badge-pill badge-pill-purple">
+                {clients.length} Accounts
               </span>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--primary)', marginTop: '0.4rem' }}>
+            <div className="kpi-metric" style={{ color: '#d0bcff' }}>
               {activeAccountsCount} Active
             </div>
-            <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', margin: '0.2rem 0 0 0' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.35rem' }}>
               {clients.length} total client accounts on file
             </p>
           </div>
 
           {/* Satisfaction Score */}
-          <div className="glass-card hover-level-2-spacious cursor-pointer" style={{ padding: '1.25rem 1.5rem', borderRadius: '1rem', background: 'var(--surface-container)' }}>
+          <div className="kpi-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 SATISFACTION SCORE
               </span>
-              <div style={{ background: clients.length > 0 ? 'rgba(0, 165, 114, 0.2)' : 'rgba(255, 255, 255, 0.06)', color: clients.length > 0 ? 'var(--secondary)' : 'var(--on-surface-variant)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '2px' }}>
-                {clients.length > 0 ? <><TrendingUp size={12} /> Verified</> : 'No reviews yet'}
-              </div>
+              <span className="badge-pill badge-pill-teal">
+                Verified
+              </span>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: clients.length > 0 ? 'var(--tertiary)' : 'var(--on-surface-variant)', marginTop: '0.4rem' }}>
+            <div className="kpi-metric" style={{ color: '#4edea3' }}>
               {clients.length > 0 ? '98% CSAT' : 'N/A'}
             </div>
-            <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-variant)', margin: '0.2rem 0 0 0' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', marginTop: '0.35rem' }}>
               {clients.length > 0 ? 'NPS 74 • Zero active escalations' : 'Awaiting initial client project feedback'}
             </p>
           </div>
@@ -593,47 +591,23 @@ export default function ClientsOverviewPage() {
                         {/* Status Badge */}
                         <td style={{ padding: '1.1rem 1.25rem', whiteSpace: 'nowrap' }}>
                           <span
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              borderRadius: '9999px',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.4rem',
-                              whiteSpace: 'nowrap',
-                              letterSpacing: '0.04em',
-                              background:
-                                c.status === 'Active'
-                                  ? 'rgba(0, 165, 114, 0.15)'
-                                  : c.status === 'At Risk'
-                                    ? 'rgba(255, 185, 95, 0.15)'
-                                    : 'rgba(255, 255, 255, 0.1)',
-                              color:
-                                c.status === 'Active'
-                                  ? 'var(--secondary)'
-                                  : c.status === 'At Risk'
-                                    ? 'var(--tertiary)'
-                                    : 'var(--on-surface-variant)',
-                              border:
-                                c.status === 'Active'
-                                  ? '1px solid rgba(0, 165, 114, 0.35)'
-                                  : c.status === 'At Risk'
-                                    ? '1px solid rgba(255, 185, 95, 0.35)'
-                                    : '1px solid rgba(255, 255, 255, 0.2)',
-                            }}
+                            className={`badge-pill ${
+                              c.status === 'Active'
+                                ? 'badge-pill-teal'
+                                : c.status === 'At Risk'
+                                ? 'badge-pill-coral'
+                                : 'badge-pill-cyan'
+                            }`}
                           >
                             <span
                               style={{
                                 width: '6px',
                                 height: '6px',
                                 borderRadius: '50%',
-                                background: 'currentColor',
-                                display: 'inline-block',
-                                flexShrink: 0,
+                                background: c.status === 'Active' ? '#4edea3' : c.status === 'At Risk' ? '#ffb4ab' : '#38bdf8',
                               }}
                             />
-                            {c.status.toUpperCase()}
+                            {c.status}
                           </span>
                         </td>
 

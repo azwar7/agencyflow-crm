@@ -414,15 +414,6 @@ export default function ProposalsPage() {
             <button
               onClick={() => setIsAiModalOpen(true)}
               className="btn btn-primary"
-              style={{
-                background: 'linear-gradient(135deg, #a855f7, #3b82f6)',
-                border: 'none',
-                boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontWeight: 700,
-              }}
             >
               <Sparkles size={16} /> Generate AI Proposal
             </button>
@@ -430,7 +421,6 @@ export default function ProposalsPage() {
             <button
               onClick={() => setIsNewModalOpen(true)}
               className="btn btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}
             >
               <Plus size={16} /> Blank Proposal
             </button>
@@ -539,29 +529,15 @@ export default function ProposalsPage() {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span
-                          style={{
-                            fontSize: '0.65rem',
-                            fontWeight: 800,
-                            padding: '0.15rem 0.45rem',
-                            borderRadius: '4px',
-                            textTransform: 'uppercase',
-                            background:
-                              p.status === 'ACCEPTED'
-                                ? 'rgba(78, 222, 163, 0.18)'
-                                : p.status === 'SENT'
-                                ? 'rgba(56, 189, 248, 0.18)'
-                                : p.status === 'REJECTED'
-                                ? 'rgba(255, 180, 171, 0.18)'
-                                : 'rgba(208, 188, 255, 0.15)',
-                            color:
-                              p.status === 'ACCEPTED'
-                                ? '#4edea3'
-                                : p.status === 'SENT'
-                                ? '#38bdf8'
-                                : p.status === 'REJECTED'
-                                ? '#ffb4ab'
-                                : '#d0bcff',
-                          }}
+                          className={`badge-pill ${
+                            p.status === 'ACCEPTED'
+                              ? 'badge-pill-teal'
+                              : p.status === 'SENT'
+                              ? 'badge-pill-cyan'
+                              : p.status === 'REJECTED'
+                              ? 'badge-pill-coral'
+                              : 'badge-pill-purple'
+                          }`}
                         >
                           {p.status}
                         </span>

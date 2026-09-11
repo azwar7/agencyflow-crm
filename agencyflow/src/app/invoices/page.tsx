@@ -229,59 +229,26 @@ export default function InvoicesPage() {
     switch (status) {
       case 'PAID':
         return (
-          <span
-            style={{
-              padding: '0.2rem 0.65rem',
-              borderRadius: '9999px',
-              background: 'rgba(78, 222, 163, 0.18)',
-              border: '1px solid rgba(78, 222, 163, 0.3)',
-              color: '#4edea3',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-            }}
-          >
-            <CheckCircle size={12} /> PAID
+          <span className="badge-pill badge-pill-teal">
+            <CheckCircle size={11} /> PAID
           </span>
         );
       case 'PENDING':
         return (
-          <span
-            style={{
-              padding: '0.2rem 0.65rem',
-              borderRadius: '9999px',
-              background: 'rgba(255, 185, 95, 0.18)',
-              border: '1px solid rgba(255, 185, 95, 0.3)',
-              color: '#ffb95f',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-            }}
-          >
-            <Clock size={12} /> PENDING
+          <span className="badge-pill badge-pill-amber">
+            <Clock size={11} /> PENDING
           </span>
         );
       case 'OVERDUE':
         return (
-          <span
-            style={{
-              padding: '0.2rem 0.65rem',
-              borderRadius: '9999px',
-              background: 'rgba(255, 180, 171, 0.18)',
-              border: '1px solid rgba(255, 180, 171, 0.35)',
-              color: '#ffb4ab',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-            }}
-          >
-            <AlertCircle size={12} /> OVERDUE
+          <span className="badge-pill badge-pill-coral">
+            <AlertCircle size={11} /> OVERDUE
+          </span>
+        );
+      default:
+        return (
+          <span className="badge-pill badge-pill-cyan">
+            {status}
           </span>
         );
     }
@@ -326,15 +293,6 @@ export default function InvoicesPage() {
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="btn btn-primary"
-              style={{
-                background: 'linear-gradient(135deg, #10b981, #059669)',
-                border: 'none',
-                boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontWeight: 700,
-              }}
             >
               <Plus size={16} /> New Invoice
             </button>
@@ -368,51 +326,41 @@ export default function InvoicesPage() {
         )}
 
         {/* Top Financial KPI Metrics Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
           {/* Total Invoiced */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CreditCard size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Invoiced</span>
+              <CreditCard size={16} color="#38bdf8" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Total Invoiced</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>${totalInvoiced.toLocaleString()}</div>
-            </div>
+            <div className="kpi-metric">${totalInvoiced.toLocaleString()}</div>
           </div>
 
           {/* Collected Cash */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(78, 222, 163, 0.15)', color: '#4edea3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Collected Cash</span>
+              <span className="badge-pill badge-pill-teal">{collectionRate}%</span>
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Collected Cash</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#4edea3' }}>
-                ${totalPaid.toLocaleString()} <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)' }}>({collectionRate}%)</span>
-              </div>
-            </div>
+            <div className="kpi-metric" style={{ color: '#4edea3' }}>${totalPaid.toLocaleString()}</div>
           </div>
 
           {/* Pending Inflow */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255, 185, 95, 0.15)', color: '#ffb95f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Clock size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pending Inflow</span>
+              <Clock size={16} color="#ffb95f" />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Pending Inflow</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#ffb95f' }}>${totalPending.toLocaleString()}</div>
-            </div>
+            <div className="kpi-metric" style={{ color: '#ffb95f' }}>${totalPending.toLocaleString()}</div>
           </div>
 
           {/* Overdue Alerts */}
-          <div style={{ background: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: totalOverdue > 0 ? 'rgba(255, 180, 171, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: totalOverdue > 0 ? '#ffb4ab' : '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AlertCircle size={20} />
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--on-surface-variant)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Overdue Invoices</span>
+              <AlertCircle size={16} color={totalOverdue > 0 ? '#ffb4ab' : '#94a3b8'} />
             </div>
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', fontWeight: 600, textTransform: 'uppercase' }}>Overdue Invoices</span>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: totalOverdue > 0 ? '#ffb4ab' : '#fff' }}>${totalOverdue.toLocaleString()}</div>
-            </div>
+            <div className="kpi-metric" style={{ color: totalOverdue > 0 ? '#ffb4ab' : '#fff' }}>${totalOverdue.toLocaleString()}</div>
           </div>
         </div>
 
