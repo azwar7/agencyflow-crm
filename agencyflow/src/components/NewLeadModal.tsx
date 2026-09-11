@@ -746,12 +746,10 @@ export function NewLeadModal({ isOpen, onClose, onSuccess, initialTab = 'manual'
                 disabled={loading || isJobRunning}
                 className="btn btn-primary"
                 style={{
-                  background: isJobRunning
-                    ? 'rgba(255, 255, 255, 0.08)'
-                    : 'linear-gradient(135deg, #4edea3 0%, #6ffbbe 100%)',
-                  color: isJobRunning ? 'var(--on-surface-variant)' : '#0a2318',
+                  background: isJobRunning ? 'rgba(255, 255, 255, 0.08)' : undefined,
+                  color: isJobRunning ? 'var(--on-surface-variant)' : undefined,
                   fontWeight: 700,
-                  border: isJobRunning ? '1px solid rgba(255, 255, 255, 0.15)' : 'none',
+                  border: isJobRunning ? '1px solid rgba(255, 255, 255, 0.15)' : undefined,
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',

@@ -120,8 +120,6 @@ export function AiConfigTab({ currentUserRole = 'MEMBER', showToast }: AiConfigT
           disabled={saving || !isOwnerOrAdmin}
           className="btn btn-primary"
           style={{
-            background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-            border: 'none',
             padding: '0.55rem 1.15rem',
             fontSize: '0.85rem',
             fontWeight: 700,

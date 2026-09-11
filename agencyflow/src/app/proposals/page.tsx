@@ -1334,8 +1334,6 @@ export default function ProposalsPage() {
                   className="btn btn-primary"
                   style={{
                     padding: '0.75rem',
-                    background: 'linear-gradient(135deg, #a855f7, #3b82f6)',
-                    border: 'none',
                     fontWeight: 700,
                     display: 'flex',
                     alignItems: 'center',

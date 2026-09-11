@@ -1725,10 +1725,6 @@ export default function LeadsPage() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.4rem',
-                                background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
-                                border: 'none',
-                                color: '#030712',
-                                boxShadow: '0 0 15px rgba(56, 189, 248, 0.3)',
                                 cursor: 'pointer',
                               }}
                             >

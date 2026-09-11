@@ -196,7 +196,7 @@ export function CustomFieldsTab({ currentUserRole = 'MEMBER', showToast }: Custo
           onClick={openNewFieldModal}
           disabled={!isOwnerOrAdmin}
           className="btn btn-primary"
-          style={{ background: 'linear-gradient(135deg, #8b5cf6, #6366f1)', border: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 700 }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 700 }}
         >
           <Plus size={16} /> Add Custom Field
         </button>

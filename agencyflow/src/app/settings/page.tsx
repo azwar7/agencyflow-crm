@@ -685,8 +685,6 @@ export default function SettingsPage() {
                     disabled={wsSaving || !isOwnerOrAdmin}
                     className="btn btn-primary"
                     style={{
-                      background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-                      border: 'none',
                       padding: '0.6rem 1.25rem',
                       fontSize: '0.85rem',
                       fontWeight: 700,

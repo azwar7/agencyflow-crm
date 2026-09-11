@@ -316,9 +316,6 @@ export function LeadFinderStatusWidget() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.4rem',
-                  background: 'linear-gradient(135deg, #4edea3 0%, #6ffbbe 100%)',
-                  color: '#0a2318',
-                  border: 'none',
                 }}
               >
                 View Leads <ArrowRight size={14} />
